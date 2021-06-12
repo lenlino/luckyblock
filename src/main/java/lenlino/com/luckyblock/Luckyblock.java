@@ -136,17 +136,25 @@ public final class Luckyblock extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("lbget")) {
-            Player p = (Player) sender;
-            p.getInventory().addItem(createskull(Integer.parseInt(args[0])));
+            if(sender instanceof  Player) {
+                Player p = (Player) sender;
+                p.getInventory().addItem(createskull(Integer.parseInt(args[0])));
+            }else{
+                System.out.println("コンソール側からこのコマンドを実行しないでください");
+            }
         } else if (cmd.getName().equalsIgnoreCase("lbgive")) {
             Player p = getPlayer(args[0]);
             p.getWorld().dropItem(p.getLocation(), createskull(Integer.parseInt(args[1])));
         }else if (cmd.getName().equalsIgnoreCase("lbdo")) {
-            if(Integer.parseInt(args[0])<i.size()&&Integer.parseInt(args[0])>=0){
-                Player p=(Player)sender;
-                (i.get(Integer.parseInt(args[0]))).onigiri(new BlockBreakEvent(p.getLocation().getBlock(),p));
+            if(sender instanceof Player) {
+                if (Integer.parseInt(args[0]) < i.size() && Integer.parseInt(args[0]) >= 0) {
+                    Player p = (Player) sender;
+                    (i.get(Integer.parseInt(args[0]))).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
+                } else {
+                    sender.sendMessage("指定された数がおかしいです。最大値:" + (i.size() - 1));
+                }
             }else{
-                sender.sendMessage("指定された数がおかしいです。最大値:"+(i.size()-1));
+                System.out.println("コンソール側からこのコマンドを実行しないでください");
             }
         }
         return false;
@@ -155,6 +163,9 @@ public final class Luckyblock extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if(!getDataFolder().exists()){
+            new File(String.valueOf(getDataFolder().toPath())).mkdir();
+        }
         File f=new File(String.valueOf(getDataFolder()));
         File[] files=f.listFiles();       //牛召喚
         for(int j=0;j< files.length;j++){
@@ -197,17 +208,19 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
-        i.add(b->{
-            Location location=b.getPlayer().getLocation();
-            location.setX(b.getPlayer().getLocation().getX()-2);
-            location.setZ(b.getPlayer().getLocation().getZ()-2);
-            location.setY(b.getPlayer().getLocation().getY()-7);
-            try {
-                Structure.placeStructure(new File(getDataFolder()+"/magma.nbt"), location, false, false);
-            } catch (IOException e) {
-                broadcastMessage(e.toString());
-            }
-        });
+        if(new File(getDataFolder()+"/magma.nbt").exists()) {
+            i.add(b -> {
+                Location location = b.getPlayer().getLocation();
+                location.setX(b.getPlayer().getLocation().getX() - 2);
+                location.setZ(b.getPlayer().getLocation().getZ() - 2);
+                location.setY(b.getPlayer().getLocation().getY() - 7);
+                try {
+                    Structure.placeStructure(new File(getDataFolder() + "/magma.nbt"), location, false, false);
+                } catch (IOException e) {
+                    broadcastMessage(e.toString());
+                }
+            });
+        }
         i.add(b->{
             ItemStack item = new ItemStack(Material.BOW);
             ItemMeta meta = item.getItemMeta();
