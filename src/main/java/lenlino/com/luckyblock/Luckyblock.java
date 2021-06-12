@@ -153,7 +153,7 @@ public final class Luckyblock extends JavaPlugin {
     }
 
 
-        @Override
+    @Override
     public void onEnable() {
         File f=new File(String.valueOf(getDataFolder()));
         File[] files=f.listFiles();       //牛召喚
@@ -209,11 +209,11 @@ public final class Luckyblock extends JavaPlugin {
             }
         });
         i.add(b->{
-                ItemStack item = new ItemStack(Material.BOW);
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName("§lTNTBow");
-                item.setItemMeta(meta);
-                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+            ItemStack item = new ItemStack(Material.BOW);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lTNTBow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         i.add(b->{ItemStack item = new ItemStack(Material.BREAD);
             ItemMeta meta = item.getItemMeta();
@@ -236,9 +236,9 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().playEffect(b.getBlock().getLocation(), a, 100);
         });
         i.add(b -> {
-            PotionEffect a = PotionEffectType.ABSORPTION,1000;
-            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED));
-        })
+            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,1000,3));
+            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000,3));
+        });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
 
