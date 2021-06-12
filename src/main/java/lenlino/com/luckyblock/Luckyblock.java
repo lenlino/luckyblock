@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import com.sun.org.apache.xml.internal.utils.NameSpace;
 import net.minecraft.server.v1_16_R3.ICrafting;
 import net.minecraft.server.v1_16_R3.RecipeCooking;
 import net.minecraft.server.v1_16_R3.RecipeItemStack;
@@ -25,10 +26,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -103,6 +102,20 @@ public final class Luckyblock extends JavaPlugin {
                         }
                     }
                 }
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")&&e.getItem().getItemMeta().getLore().get(0).equals("充電しないといけない")&&e.getClickedBlock().getType()==(Material.GOLD_BLOCK)){
+                e.getItem().setAmount(e.getItem().getAmount()-1);
+                e.getClickedBlock().setType(Material.AIR);
+                ItemStack item = new ItemStack(Material.STICK);
+                ItemMeta meta = item.getItemMeta();
+                ArrayList<String> lis=new ArrayList<String>();
+                lis.add("経験値を消費して雷が打てる");
+                meta.setDisplayName("§e§l雷の杖");
+                meta.addEnchant(Enchantment.DURABILITY,1,true);
+                meta.setLore(lis);
+                item.setItemMeta(meta);
+                e.getPlayer().getInventory().addItem(item);
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖")&&e.getItem().getItemMeta().getLore().get(0).equals("経験値を消費して雷が打てる")&&e.getClickedBlock().getType()==(Material.GOLD_BLOCK)){
+
             }
         }
         @EventHandler
@@ -119,6 +132,16 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             if(e.getItem().isSimilar(item)){
                 i.get(10).onigiri(new BlockBreakEvent(e.getPlayer().getLocation().getBlock(),e.getPlayer()));
+            }
+        }
+        @EventHandler
+        public void TNTJoinEvent(PlayerJoinEvent e){
+            if(e.getPlayer().hasMetadata("TNT")){
+                for(int i=0;i<10;i++) {
+                    Entity tnt = e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(), EntityType.PRIMED_TNT);
+                    e.getPlayer().addPassenger(tnt);
+                }
+                e.getPlayer().removeMetadata("TNT",plugin);
             }
         }
         @EventHandler
@@ -159,7 +182,6 @@ public final class Luckyblock extends JavaPlugin {
         }
         return false;
     }
-
 
     @Override
     public void onEnable() {
@@ -251,6 +273,22 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b -> {
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,1000,3));
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000,3));
+        });
+        i.add(b ->{
+            b.getPlayer().setMetadata("TNT",new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
+            b.getPlayer().sendMessage("§cTNT");
+            i.get((new Random()).nextInt(i.size())).onigiri(b);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            ArrayList<String> lis=new ArrayList<String>();
+            lis.add("充電しないといけない");
+            meta.setDisplayName("§e雷の杖(未完成)");
+            meta.addEnchant(Enchantment.DURABILITY,1,true);
+            meta.setLore(lis);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
