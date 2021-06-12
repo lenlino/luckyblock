@@ -1,0 +1,260 @@
+package lenlino.com.luckyblock;
+
+import net.minecraft.server.v1_16_R3.ICrafting;
+import net.minecraft.server.v1_16_R3.RecipeCooking;
+import net.minecraft.server.v1_16_R3.RecipeItemStack;
+import org.apache.logging.log4j.core.util.IOUtils;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
+import org.bukkit.craftbukkit.libs.org.codehaus.plexus.util.IOUtil;
+import org.bukkit.craftbukkit.v1_16_R3.metadata.EntityMetadataStore;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import javax.naming.Name;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.*;
+
+import static org.bukkit.Bukkit.*;
+
+
+public final class Luckyblock extends JavaPlugin {
+
+    Plugin plugin=this;
+    ArrayList<risuto> i=new ArrayList<risuto>();
+
+
+
+    public class BlockBreak implements Listener {
+        //ブロック破壊されたとき
+        @EventHandler
+        public void breakblock(BlockBreakEvent b) {
+            if(b.getBlock().hasMetadata("lucky")){
+                b.getBlock().setType(Material.AIR);
+                b.getBlock().removeMetadata("lucky",plugin);
+                i.get((new Random()).nextInt(i.size())).onigiri(b);
+            }
+        }
+        @EventHandler
+        public void placeblock(BlockPlaceEvent b) {
+
+            if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
+                b.getBlock().setMetadata("lucky", new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
+
+            }
+        }
+        @EventHandler
+        public void PlayerEntityShootBowEvent(EntityShootBowEvent e){
+            if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {
+                e.getProjectile().addPassenger(e.getEntity());
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
+                e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(plugin,e.getProjectile().getLocation().clone()));
+            }
+        }
+        @EventHandler
+        public void TNTBowHitEvent(ProjectileHitEvent e){
+            if(e.getEntity().hasMetadata("TNTarrow")){
+                Location location=e.getEntity().getLocation();
+                location.setY(e.getEntity().getLocation().getY()+0.5);
+                e.getHitBlock().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
+                e.getEntity().removeMetadata("TNTarrow",plugin);
+            }
+        }
+        @EventHandler
+        public void ClickEvent(PlayerInteractEvent e){
+            if(e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")){
+                if(e.getItem().getItemMeta().getLore().size()==3) {
+                    if(e.getItem().getItemMeta().getLore().get(2).equals("create by koufu")) {
+                        if (e.getPlayer().getFoodLevel() < 20) {
+                            e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 5);
+                        } else {
+                            e.getPlayer().sendMessage("§cもうお腹がいっぱいです");
+                        }
+                    }
+                }
+            }
+        }
+        @EventHandler
+        public void EatBreadEvent(PlayerItemConsumeEvent e){
+            ItemStack item = new ItemStack(Material.BREAD);
+            ItemMeta meta = item.getItemMeta();
+            ArrayList<String> lis=new ArrayList<String>();
+            lis.add("koufuが作ったパン");
+            lis.add("水が欲しくなる");
+            lis.add("create by koufu");
+            meta.setDisplayName("§a§lkoufuのパン");
+            meta.addEnchant(Enchantment.DURABILITY,1,true);
+            meta.setLore(lis);
+            item.setItemMeta(meta);
+            if(e.getItem().isSimilar(item)){
+                i.get(10).onigiri(new BlockBreakEvent(e.getPlayer().getLocation().getBlock(),e.getPlayer()));
+            }
+        }
+        @EventHandler
+        public void CreatureSpawnEvent(CreatureSpawnEvent e) {
+            double d;
+            d = Math.random();
+            if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
+                e.getEntity().setMetadata("mob", new FixedMetadataValue(plugin,e.getEntity().getLocation().clone()));
+                e.getEntity().setCustomName("LuckyMob");
+                e.getEntity().setCustomNameVisible(true);
+            }
+        }
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("lbget")) {
+            Player p = (Player) sender;
+            p.getInventory().addItem(createskull(Integer.parseInt(args[0])));
+        } else if (cmd.getName().equalsIgnoreCase("lbgive")) {
+            Player p = getPlayer(args[0]);
+            p.getWorld().dropItem(p.getLocation(), createskull(Integer.parseInt(args[1])));
+        }else if (cmd.getName().equalsIgnoreCase("lbdo")) {
+            if(Integer.parseInt(args[0])<i.size()&&Integer.parseInt(args[0])>=0){
+                Player p=(Player)sender;
+                (i.get(Integer.parseInt(args[0]))).onigiri(new BlockBreakEvent(p.getLocation().getBlock(),p));
+            }else{
+                sender.sendMessage("指定された数がおかしいです。最大値:"+(i.size()-1));
+            }
+        }
+        return false;
+    }
+
+
+        @Override
+    public void onEnable() {
+        File f=new File(String.valueOf(getDataFolder()));
+        File[] files=f.listFiles();       //牛召喚
+        for(int j=0;j< files.length;j++){
+            if(files[j].isFile()&&!(files[j].getName()).equals("magma.nbt")){
+                int finalJ = j;
+                i.add(b->{try {
+                    Structure.placeStructure(files[finalJ], b.getBlock().getLocation(), false, false);
+                } catch (IOException e) {
+                    broadcastMessage(e.toString());
+                }});
+            }
+        }
+        i.add(b->getWorld(b.getBlock().getWorld().getName()).spawnEntity(b.getBlock().getLocation(), EntityType.COW));
+        //ゾンビ召喚
+        i.add(b->getWorld(b.getBlock().getWorld().getName()).spawnEntity(b.getBlock().getLocation(), EntityType.ZOMBIE));
+        //ストレイTNT
+        i.add(b->{
+            for (int j = 0;j<10;j++) {
+                Entity vex = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.VINDICATOR);
+                Entity tnt = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.PRIMED_TNT);
+                vex.addPassenger(tnt);
+            }
+        });
+        i.add(b->{
+            for (int j = 0;j<10;j++) {
+                Entity vex = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.VEX);
+                Entity tnt = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.PRIMED_TNT);
+                vex.addPassenger(tnt);
+            }
+        });
+
+        //ウィザー
+        i.add(b -> b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.WITHER));
+        //TNTアイテム
+        i.add(b -> b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.TNT, 32)));
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.BOW);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lPlayerBow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b->{
+            Location location=b.getPlayer().getLocation();
+            location.setX(b.getPlayer().getLocation().getX()-2);
+            location.setZ(b.getPlayer().getLocation().getZ()-2);
+            location.setY(b.getPlayer().getLocation().getY()-7);
+            try {
+                Structure.placeStructure(new File(getDataFolder()+"/magma.nbt"), location, false, false);
+            } catch (IOException e) {
+                broadcastMessage(e.toString());
+            }
+        });
+        i.add(b->{
+                ItemStack item = new ItemStack(Material.BOW);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName("§lTNTBow");
+                item.setItemMeta(meta);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b->{ItemStack item = new ItemStack(Material.BREAD);
+            ItemMeta meta = item.getItemMeta();
+            ArrayList<String> lis=new ArrayList<String>();
+            lis.add("koufuが作ったパン");
+            lis.add("水が欲しくなる");
+            lis.add("create by koufu");
+            meta.setDisplayName("§a§lkoufuのパン");
+            meta.addEnchant(Enchantment.DURABILITY,1,true);
+            meta.setLore(lis);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b -> {
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.DIAMOND, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.EMERALD, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT, 15));
+            Effect a = Effect.ANVIL_BREAK;
+            b.getBlock().getWorld().playEffect(b.getBlock().getLocation(), a, 100);
+        });
+        i.add(b -> {
+            PotionEffect a = PotionEffectType.ABSORPTION,1000;
+            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED));
+        })
+        getServer().getPluginManager().registerEvents(new BlockBreak(), this);
+    }
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+    }
+
+
+    public ItemStack createskull(Integer index) {
+        String base64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM5ZDVkNzhiM2ZlNzFjOWZhODk4MTk4OGY4MWNhMzdlYjlkZmFiYmY0NzdkZmI4OGNmMWJlN2U3YWFkMWUifX19";
+        ItemStack skull = SkullCreator.itemFromBase64(base64,index);
+        SkullMeta skullmeta = (SkullMeta)  skull.getItemMeta();
+        skullmeta.setDisplayName("§lluckyblock");
+        skull.setItemMeta(skullmeta);
+
+        return skull;
+    }
+}
