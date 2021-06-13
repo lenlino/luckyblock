@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,12 +11,15 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -57,6 +61,19 @@ public final class Luckyblock extends JavaPlugin {
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
 
+            }else if(b.getItemInHand().getItemMeta().getLore().get(0).equals("右クリックでアイテムをしまうことができる")){
+                b.setCancelled(true);
+                OpenbackPack(b.getPlayer());
+            }
+        }
+        private void OpenbackPack(Player p){
+            Inventory inv= Bukkit.createInventory(null,27,"バックパック");
+            p.openInventory(inv);
+        }
+        @EventHandler
+        public void CloseChestGUIEvent(InventoryCloseEvent e){
+            if(e.getView().getTitle().equals("バックパック")){
+                //編集がいる
             }
         }
         @EventHandler
@@ -112,6 +129,8 @@ public final class Luckyblock extends JavaPlugin {
                 }else{
                     e.getPlayer().sendMessage("§4経験値が足りません");
                 }
+            }else if((e.getAction()== Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)&&e.getItem().getItemMeta().getLore().get(0).equals("右クリックでアイテムをしまうことができる")){
+                OpenbackPack(e.getPlayer());
             }
         }
         private Block getCursorFocusBlock(Player player) {
@@ -298,6 +317,16 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000,1000));
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.CHEST);
+            ItemMeta meta = item.getItemMeta();
+            ArrayList<String> lis=new ArrayList<String>();
+            lis.add("右クリックでアイテムをしまうことができる");
+            meta.setDisplayName("§e§lバックパック");
+            meta.setLore(lis);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
