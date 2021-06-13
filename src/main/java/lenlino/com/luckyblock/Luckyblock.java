@@ -33,10 +33,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 
-import java.io.*;
+import java.io.File;
+import  java.io.IOException;
+import java.io.IOException;
+import java.nio.channels.Channels;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Random;
+import java.util.ArrayList;
 
 import static org.bukkit.Bukkit.*;
 
@@ -77,10 +82,17 @@ public final class Luckyblock extends JavaPlugin {
         @EventHandler
         public void TNTBowHitEvent(ProjectileHitEvent e){
             if(e.getEntity().hasMetadata("TNTarrow")){
-                Location location=e.getEntity().getLocation();
-                location.setY(e.getEntity().getLocation().getY()+0.5);
-                e.getHitBlock().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
-                e.getEntity().removeMetadata("TNTarrow",plugin);
+                if(e.getHitEntity()==null) {
+                    Location location = e.getEntity().getLocation();
+                    location.setY(e.getEntity().getLocation().getY() - 0.25);
+                    e.getHitBlock().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
+                    e.getEntity().removeMetadata("TNTarrow", plugin);
+                }else{
+                    Location location =e.getHitEntity().getLocation();
+                    location.setY(location.getY()-0.25);
+                    e.getHitEntity().getWorld().spawnEntity(location,EntityType.PRIMED_TNT);
+                    e.getEntity().removeMetadata("TNTarrow", plugin);
+                }
             }
         }
         @EventHandler
@@ -250,7 +262,7 @@ public final class Luckyblock extends JavaPlugin {
                 location.setZ(b.getPlayer().getLocation().getZ() - 2);
                 location.setY(b.getPlayer().getLocation().getY() - 7);
                 try {
-                    Structure.placeStructure(new File(getDataFolder()+"/magma.nbt"), location, false, false);
+                    Structure.placeStructure(new File(getDataFolder().toString()), location, false, false);
                 } catch (IOException e) {
                     broadcastMessage(e.toString());
                 }
