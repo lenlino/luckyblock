@@ -1,20 +1,11 @@
 package lenlino.com.luckyblock;
 
-import com.sun.org.apache.xml.internal.utils.NameSpace;
-import net.minecraft.server.v1_16_R3.ICrafting;
-import net.minecraft.server.v1_16_R3.RecipeCooking;
-import net.minecraft.server.v1_16_R3.RecipeItemStack;
-import org.apache.logging.log4j.core.util.IOUtils;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
-import org.bukkit.craftbukkit.libs.org.codehaus.plexus.util.IOUtil;
-import org.bukkit.craftbukkit.v1_16_R3.metadata.EntityMetadataStore;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -22,14 +13,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -37,12 +24,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BlockIterator;
 
-import javax.naming.Name;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.bukkit.Bukkit.*;
@@ -104,19 +90,39 @@ public final class Luckyblock extends JavaPlugin {
                 }
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")&&e.getItem().getItemMeta().getLore().get(0).equals("充電しないといけない")&&e.getClickedBlock().getType()==(Material.GOLD_BLOCK)){
                 e.getItem().setAmount(e.getItem().getAmount()-1);
-                e.getClickedBlock().setType(Material.AIR);
+                e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
                 ItemStack item = new ItemStack(Material.STICK);
                 ItemMeta meta = item.getItemMeta();
                 ArrayList<String> lis=new ArrayList<String>();
-                lis.add("経験値を消費して雷が打てる");
+                lis.add("経験値を1レべ消費して雷が打てる");
                 meta.setDisplayName("§e§l雷の杖");
                 meta.addEnchant(Enchantment.DURABILITY,1,true);
                 meta.setLore(lis);
                 item.setItemMeta(meta);
                 e.getPlayer().getInventory().addItem(item);
-            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖")&&e.getItem().getItemMeta().getLore().get(0).equals("経験値を消費して雷が打てる")&&e.getClickedBlock().getType()==(Material.GOLD_BLOCK)){
-
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖")&&e.getItem().getItemMeta().getLore().get(0).equals("経験値を1レべ消費して雷が打てる")){
+                Block focusBlock = getCursorFocusBlock(e.getPlayer());
+                if(1<=e.getPlayer().getLevel()) {
+                    if (focusBlock != null) {
+                        focusBlock.getWorld().strikeLightning(focusBlock.getLocation());
+                        e.getPlayer().giveExpLevels(-1);
+                    }else{
+                        e.getPlayer().sendMessage("§4100ブロック以内に空気以外のブロックが見つかりませんでした");
+                    }
+                }else{
+                    e.getPlayer().sendMessage("§4経験値が足りません");
+                }
             }
+        }
+        private Block getCursorFocusBlock(Player player) {
+            BlockIterator blocks = new BlockIterator(player, 100);
+            while (blocks.hasNext()) {
+                Block block = blocks.next();
+                if ( block.getType() != Material.AIR ) {
+                    return block;
+                }
+            }
+            return null;
         }
         @EventHandler
         public void EatBreadEvent(PlayerItemConsumeEvent e){
@@ -163,7 +169,7 @@ public final class Luckyblock extends JavaPlugin {
                 Player p = (Player) sender;
                 p.getInventory().addItem(createskull(Integer.parseInt(args[0])));
             }else{
-                System.out.println("コンソール側からこのコマンドを実行しないでください");
+                System.out.println("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
         } else if (cmd.getName().equalsIgnoreCase("lbgive")) {
             Player p = getPlayer(args[0]);
@@ -177,7 +183,7 @@ public final class Luckyblock extends JavaPlugin {
                     sender.sendMessage("指定された数がおかしいです。最大値:" + (i.size() - 1));
                 }
             }else{
-                System.out.println("コンソール側からこのコマンドを実行しないでください");
+                System.out.println("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
         }
         return false;
@@ -237,7 +243,7 @@ public final class Luckyblock extends JavaPlugin {
                 location.setZ(b.getPlayer().getLocation().getZ() - 2);
                 location.setY(b.getPlayer().getLocation().getY() - 7);
                 try {
-                    Structure.placeStructure(new File(getDataFolder() + "/magma.nbt"), location, false, false);
+                    Structure.placeStructure(new File(getDataFolder()+"/magma.nbt"), location, false, false);
                 } catch (IOException e) {
                     broadcastMessage(e.toString());
                 }
@@ -289,6 +295,9 @@ public final class Luckyblock extends JavaPlugin {
             meta.setLore(lis);
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b->{
+            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000,1000));
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
