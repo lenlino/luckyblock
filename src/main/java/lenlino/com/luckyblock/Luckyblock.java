@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import net.minecraft.server.v1_16_R3.ItemArmorStand;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -40,6 +41,7 @@ import java.nio.channels.Channels;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -77,6 +79,13 @@ public final class Luckyblock extends JavaPlugin {
                 e.getProjectile().addPassenger(e.getEntity());
             } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
                 e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(plugin,e.getProjectile().getLocation().clone()));
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow")) {
+                List<Entity> near = e.getEntity().getNearbyEntities(5,5,5);
+                Effect a = Effect.ANVIL_BREAK;
+                e.getEntity().getWorld().playEffect(e.getEntity().getLocation(), a, 100);
+                near.get(0).setInvulnerable(true);
+                e.getProjectile().addPassenger(near.get(0));
+                near.get(0).setInvulnerable(false);
             }
         }
         @EventHandler
@@ -255,6 +264,23 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
+        i.add(b -> {
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.DIAMOND, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.EMERALD, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT, 15));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT, 15));
+            Effect a = Effect.ANVIL_BREAK;
+            b.getBlock().getWorld().playEffect(b.getBlock().getLocation(), a, 100);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.BOW);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lByeBow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+
+        //code by koufu193
         if(new File(getDataFolder()+"/magma.nbt").exists()) {
             i.add(b -> {
                 Location location = b.getPlayer().getLocation();
@@ -286,14 +312,6 @@ public final class Luckyblock extends JavaPlugin {
             meta.setLore(lis);
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
-        });
-        i.add(b -> {
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.DIAMOND, 15));
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.EMERALD, 15));
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT, 15));
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT, 15));
-            Effect a = Effect.ANVIL_BREAK;
-            b.getBlock().getWorld().playEffect(b.getBlock().getLocation(), a, 100);
         });
         i.add(b -> {
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,1000,3));
