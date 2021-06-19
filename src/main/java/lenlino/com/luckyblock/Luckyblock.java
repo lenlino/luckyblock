@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.ItemArmorStand;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -22,12 +24,14 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -106,39 +110,41 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void ClickEvent(PlayerInteractEvent e){
-            if(e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")){
-                if(e.getItem().getItemMeta().getLore().size()==3) {
-                    if(e.getItem().getItemMeta().getLore().get(2).equals("create by koufu")) {
-                        if (e.getPlayer().getFoodLevel() < 20) {
-                            e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 5);
-                        } else {
-                            e.getPlayer().sendMessage("§cもうお腹がいっぱいです");
+            if(e.getItem()!=null) {
+                if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
+                    if (e.getItem().getItemMeta().getLore().size() == 3) {
+                        if (e.getItem().getItemMeta().getLore().get(2).equals("create by koufu")) {
+                            if (e.getPlayer().getFoodLevel() < 20) {
+                                e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 5);
+                            } else {
+                                e.getPlayer().sendMessage("§cもうお腹がいっぱいです");
+                            }
                         }
                     }
-                }
-            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")&&e.getItem().getItemMeta().getLore().get(0).equals("充電しないといけない")&&e.getClickedBlock().getType()==(Material.GOLD_BLOCK)){
-                e.getItem().setAmount(e.getItem().getAmount()-1);
-                e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
-                ItemStack item = new ItemStack(Material.STICK);
-                ItemMeta meta = item.getItemMeta();
-                ArrayList<String> lis=new ArrayList<String>();
-                lis.add("経験値を1レべ消費して雷が打てる");
-                meta.setDisplayName("§e§l雷の杖");
-                meta.addEnchant(Enchantment.DURABILITY,1,true);
-                meta.setLore(lis);
-                item.setItemMeta(meta);
-                e.getPlayer().getInventory().addItem(item);
-            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖")&&e.getItem().getItemMeta().getLore().get(0).equals("経験値を1レべ消費して雷が打てる")){
-                Block focusBlock = getCursorFocusBlock(e.getPlayer());
-                if(1<=e.getPlayer().getLevel()) {
-                    if (focusBlock != null) {
-                        focusBlock.getWorld().strikeLightning(focusBlock.getLocation());
-                        e.getPlayer().giveExpLevels(-1);
-                    }else{
-                        e.getPlayer().sendMessage("§4100ブロック以内に空気以外のブロックが見つかりませんでした");
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && e.getItem().getItemMeta().getLore().get(0).equals("充電しないといけない") && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
+                    e.getItem().setAmount(e.getItem().getAmount() - 1);
+                    e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
+                    ItemStack item = new ItemStack(Material.STICK);
+                    ItemMeta meta = item.getItemMeta();
+                    ArrayList<String> lis = new ArrayList<String>();
+                    lis.add("経験値を1レべ消費して雷が打てる");
+                    meta.setDisplayName("§e§l雷の杖");
+                    meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                    meta.setLore(lis);
+                    item.setItemMeta(meta);
+                    e.getPlayer().getInventory().addItem(item);
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖") && e.getItem().getItemMeta().getLore().get(0).equals("経験値を1レべ消費して雷が打てる")) {
+                    Block focusBlock = getCursorFocusBlock(e.getPlayer());
+                    if (1 <= e.getPlayer().getLevel()) {
+                        if (focusBlock != null) {
+                            focusBlock.getWorld().strikeLightning(focusBlock.getLocation());
+                            e.getPlayer().giveExpLevels(-1);
+                        } else {
+                            e.getPlayer().sendMessage("§4100ブロック以内に空気以外のブロックが見つかりませんでした");
+                        }
+                    } else {
+                        e.getPlayer().sendMessage("§4経験値が足りません");
                     }
-                }else{
-                    e.getPlayer().sendMessage("§4経験値が足りません");
                 }
             }
         }
@@ -234,6 +240,7 @@ public final class Luckyblock extends JavaPlugin {
                 }});
             }
         }
+        //code by lenlino
         i.add(b->getWorld(b.getBlock().getWorld().getName()).spawnEntity(b.getBlock().getLocation(), EntityType.COW));
         //ゾンビ召喚
         i.add(b->getWorld(b.getBlock().getWorld().getName()).spawnEntity(b.getBlock().getLocation(), EntityType.ZOMBIE));
@@ -278,6 +285,9 @@ public final class Luckyblock extends JavaPlugin {
             meta.setDisplayName("§lByeBow");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b -> {
+            ItemStack
         });
 
         //code by koufu193
@@ -335,6 +345,17 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000,1000));
+        });
+        i.add(b -> {
+            Entity entity=b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.SKELETON);
+            LivingEntity entity1 = (LivingEntity) entity;
+            ItemStack item = new ItemStack(Material.BOW);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lPlayerBow");
+            item.setItemMeta(meta);
+            entity1.getEquipment().setItemInMainHand(item);
+            entity1.setAI(true);
+
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
