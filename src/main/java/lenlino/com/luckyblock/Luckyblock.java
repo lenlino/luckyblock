@@ -20,6 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -40,11 +41,6 @@ import org.bukkit.util.BlockIterator;
 
 import java.io.File;
 import  java.io.IOException;
-import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
@@ -145,6 +141,9 @@ public final class Luckyblock extends JavaPlugin {
                     } else {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
+                }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")&&e.getItem().getItemMeta().getLore().get(0).equals("デスの死から回避できる棒")){
+                    e.getItem().setType(Material.AIR);
+                    e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin,e.getPlayer().getLocation()));
                 }
             }
         }
@@ -157,6 +156,13 @@ public final class Luckyblock extends JavaPlugin {
                 }
             }
             return null;
+        }
+        @EventHandler
+        public void DamageEvent(EntityDamageEvent e){
+            if(e.getEntityType().equals(EntityType.PLAYER)&&e.getEntity().hasMetadata("noDeath")&&e.getDamage()==999*999){
+                ((Player)e.getEntity()).sendMessage("死から回避しました");
+                e.setCancelled(true);
+            }
         }
         @EventHandler
         public void EatBreadEvent(PlayerItemConsumeEvent e){
@@ -289,7 +295,6 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b -> {
             ItemStack
         });
-
         //code by koufu193
         if(new File(getDataFolder()+"/magma.nbt").exists()) {
             i.add(b -> {
@@ -356,6 +361,22 @@ public final class Luckyblock extends JavaPlugin {
             entity1.getEquipment().setItemInMainHand(item);
             entity1.setAI(true);
 
+        });
+        //デス回避
+        i.add(b->{
+            if(Math.random()*10<2) {
+                ItemStack item = new ItemStack(Material.STICK);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName("§c§lデス回避棒");
+                ArrayList<String> lore = new ArrayList<>();
+                lore.add("デスの死から回避できる棒");
+                lore.add("クリックすると消える");
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+            }else{
+                i.get((new Random()).nextInt(i.size())).onigiri(b);
+            }
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
