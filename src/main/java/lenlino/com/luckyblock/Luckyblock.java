@@ -139,7 +139,7 @@ public final class Luckyblock extends JavaPlugin {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
                 }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")){
-                    if(!e.getPlayer().hasMetadata("noDeath")) {
+                    if(!e.getPlayer().hasMetadata("noDeath")&&e.getPlayer().hasMetadata("noDeath1")&&e.getPlayer().hasMetadata("noDeath0")) {
                         e.getItem().setAmount(e.getItem().getAmount() - 1);
                         e.getPlayer().sendMessage("デスノートの死に耐えられるようになった");
                         e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin, e.getPlayer().getLocation()));
@@ -161,9 +161,26 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void DamageEvent(EntityDamageEvent e){
-            if(e.getEntityType().equals(EntityType.PLAYER)&&e.getEntity().hasMetadata("noDeath")&&e.getDamage()==999*999&&e.getEntity().getLocation().getWorld().getName().indexOf("_the_end")==-1){
-                e.setCancelled(true);
-                ((Player)e.getEntity()).sendMessage("死から回避しました");
+            if(e.getEntityType().equals(EntityType.PLAYER)&&e.getDamage()==999*999&&e.getEntity().getLocation().getWorld().getName().indexOf("_the_end")==-1){
+                if(e.getEntity().hasMetadata("noDeath")){
+                    ((Player) e.getEntity()).sendMessage("死から回避しました(残り二回)");
+                    e.getEntity().removeMetadata("noDeath",plugin);
+                    e.getEntity().setMetadata("noDeath1", new FixedMetadataValue(plugin, e.getEntity().getLocation()));
+                    e.setCancelled(true);
+                }else if(e.getEntity().hasMetadata("noDeath1")){
+                    ((Player) e.getEntity()).sendMessage("死から回避しました(残り一回)");
+                    e.getEntity().removeMetadata("noDeath1",plugin);
+                    e.getEntity().setMetadata("noDeath0", new FixedMetadataValue(plugin, e.getEntity().getLocation()));
+                    e.setCancelled(true);
+                }else if(e.getEntity().hasMetadata("noDeath0")){
+                    if(Math.random()*10<1) {
+                        ((Player) e.getEntity()).sendMessage("死から回避しました(デス回避棒が壊れませんでした!)");
+                    }else{
+                        ((Player) e.getEntity()).sendMessage("死から回避しました(デス回避棒が壊れた)");
+                        e.getEntity().removeMetadata("noDeath0", plugin);
+                    }
+                    e.setCancelled(true);
+                }
             }
         }
         @EventHandler
