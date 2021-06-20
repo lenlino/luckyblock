@@ -138,8 +138,9 @@ public final class Luckyblock extends JavaPlugin {
                     } else {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
-                }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")&&e.getItem().getItemMeta().getLore().get(0).equals("デスの死から回避できる棒")){
-                    e.getItem().setType(Material.AIR);
+                }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")){
+                    e.getItem().setAmount(e.getItem().getAmount()-1);
+                    e.getPlayer().sendMessage("デスノートの死に耐えられるようになった");
                     e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin,e.getPlayer().getLocation()));
                 }
             }
