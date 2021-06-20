@@ -303,14 +303,15 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         //code by koufu193
-        if(new File(getDataFolder()+"/magma.nbt").exists()) {
+        File data=new File(getDataFolder()+"/magma.nbt");
+        if(data.exists()) {
             i.add(b -> {
                 Location location = b.getPlayer().getLocation();
                 location.setX(b.getPlayer().getLocation().getX() - 2);
                 location.setZ(b.getPlayer().getLocation().getZ() - 2);
                 location.setY(b.getPlayer().getLocation().getY() - 7);
                 try {
-                    Structure.placeStructure(new File(getDataFolder().toString()), location, false, false);
+                    Structure.placeStructure(data, location, false, false);
                 } catch (IOException e) {
                     broadcastMessage(e.toString());
                 }
