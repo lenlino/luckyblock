@@ -5,7 +5,10 @@ api-version: 1.16
 commands:
   lbget:
     description: ラッキーブロック獲得
+    permission: luckyblock.get
   lbgive:
     description: ラッキブロック渡す
+    permission: luckyblock.give
   lbdo:
     description: ラッキブロックの内容実行
+    permission: luckyblock.do
