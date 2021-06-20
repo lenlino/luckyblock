@@ -139,9 +139,13 @@ public final class Luckyblock extends JavaPlugin {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
                 }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")){
-                    e.getItem().setAmount(e.getItem().getAmount()-1);
-                    e.getPlayer().sendMessage("デスノートの死に耐えられるようになった");
-                    e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin,e.getPlayer().getLocation()));
+                    if(!e.getPlayer().hasMetadata("noDeath")) {
+                        e.getItem().setAmount(e.getItem().getAmount() - 1);
+                        e.getPlayer().sendMessage("デスノートの死に耐えられるようになった");
+                        e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin, e.getPlayer().getLocation()));
+                    }else{
+                        e.getPlayer().sendMessage("§cあなたは既にデスノートの死から耐えれてます");
+                    }
                 }
             }
         }
@@ -157,9 +161,9 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void DamageEvent(EntityDamageEvent e){
-            if(e.getEntityType().equals(EntityType.PLAYER)&&e.getEntity().hasMetadata("noDeath")&&e.getDamage()==999*999){
-                ((Player)e.getEntity()).sendMessage("死から回避しました");
+            if(e.getEntityType().equals(EntityType.PLAYER)&&e.getEntity().hasMetadata("noDeath")&&e.getDamage()==999*999&&e.getEntity().getLocation().getWorld().getName().indexOf("_the_end")==-1){
                 e.setCancelled(true);
+                ((Player)e.getEntity()).sendMessage("死から回避しました");
             }
         }
         @EventHandler
