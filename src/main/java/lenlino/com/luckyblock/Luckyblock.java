@@ -19,10 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -200,6 +197,14 @@ public final class Luckyblock extends JavaPlugin {
                 e.getEntity().setCustomNameVisible(true);
             }
         }
+
+        @EventHandler
+        public void dropevent(EntityDropItemEvent e) {
+            if (e.getEntity().hasMetadata("mob")) {
+                e.setCancelled(true);
+                e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), createskull(1));
+            }
+        }
     }
 
     @Override
@@ -291,9 +296,6 @@ public final class Luckyblock extends JavaPlugin {
             meta.setDisplayName("§lByeBow");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
-        });
-        i.add(b -> {
-            ItemStack
         });
         //code by koufu193
         if(new File(getDataFolder()+"/magma.nbt").exists()) {
