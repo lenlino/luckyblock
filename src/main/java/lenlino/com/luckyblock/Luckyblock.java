@@ -387,22 +387,6 @@ public final class Luckyblock extends JavaPlugin {
             entity1.setAI(true);
 
         });
-        //デス回避
-        i.add(b->{
-            if(Math.random()*10<2) {
-                ItemStack item = new ItemStack(Material.STICK);
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName("§c§lデス回避棒");
-                ArrayList<String> lore = new ArrayList<>();
-                lore.add("デスの死から回避できる棒");
-                lore.add("クリックすると消える");
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-            }else{
-                i.get((new Random()).nextInt(i.size())).onigiri(b);
-            }
-        });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
 
