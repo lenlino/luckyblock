@@ -1,12 +1,9 @@
 package lenlino.com.luckyblock;
 
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.ItemArmorStand;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Location;
+import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.*;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +11,7 @@ import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -60,6 +58,8 @@ public final class Luckyblock extends JavaPlugin {
                 b.getBlock().setType(Material.AIR);
                 b.getBlock().removeMetadata("lucky",plugin);
                 i.get((new Random()).nextInt(i.size())).onigiri(b);
+                b.getBlock().getWorld().spawnParticle(Particle.EXPLOSION_LARGE,b.getBlock().getLocation(),1);
+                b.getBlock().getWorld().playSound(b.getPlayer().getLocation(),Sound.ENTITY_SPLASH_POTION_BREAK,100,1);
             }
         }
         @EventHandler
@@ -78,8 +78,6 @@ public final class Luckyblock extends JavaPlugin {
                 e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(plugin,e.getProjectile().getLocation().clone()));
             } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow")) {
                 List<Entity> near = e.getEntity().getNearbyEntities(5,5,5);
-                Effect a = Effect.ANVIL_BREAK;
-                e.getEntity().getWorld().playEffect(e.getEntity().getLocation(), a, 100);
                 near.get(0).setInvulnerable(true);
                 e.getProjectile().addPassenger(near.get(0));
                 near.get(0).setInvulnerable(false);
@@ -114,7 +112,7 @@ public final class Luckyblock extends JavaPlugin {
                             }
                         }
                     }
-                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && e.getItem().getItemMeta().getLore().get(0).equals("充電しないといけない") && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")  && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
                     e.getItem().setAmount(e.getItem().getAmount() - 1);
                     e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
                     ItemStack item = new ItemStack(Material.STICK);
@@ -221,9 +219,8 @@ public final class Luckyblock extends JavaPlugin {
         }
 
         @EventHandler
-        public void dropevent(EntityDropItemEvent e) {
+        public void dropevent(EntityDeathEvent e) {
             if (e.getEntity().hasMetadata("mob")) {
-                e.setCancelled(true);
                 e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), createskull(1));
             }
         }
@@ -319,6 +316,18 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
+        i.add(b -> {
+            ItemDrop(Material.GOLDEN_CHESTPLATE,1,b);
+            ItemDrop(Material.GOLDEN_BOOTS,1,b);
+            ItemDrop(Material.GOLDEN_HELMET,1,b);
+            ItemDrop(Material.GOLDEN_LEGGINGS,1,b);
+        });
+        i.add(b -> {
+            ItemDrop(Material.DIAMOND_CHESTPLATE,1,b);
+            ItemDrop(Material.DIAMOND_BOOTS,1,b);
+            ItemDrop(Material.DIAMOND_HELMET,1,b);
+            ItemDrop(Material.DIAMOND_LEGGINGS,1,b);
+        });
         //code by koufu193
         File data=new File(getDataFolder()+"/magma.nbt");
         if(data.exists()) {
@@ -385,7 +394,6 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             entity1.getEquipment().setItemInMainHand(item);
             entity1.setAI(true);
-
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
@@ -404,5 +412,10 @@ public final class Luckyblock extends JavaPlugin {
         skull.setItemMeta(skullmeta);
 
         return skull;
+    }
+
+    public void ItemDrop(Material i,Integer a,BlockBreakEvent e) {
+        ItemStack item = new ItemStack(i,a);
+        e.getBlock().getWorld().dropItem(e.getBlock().getLocation(), item);
     }
 }
