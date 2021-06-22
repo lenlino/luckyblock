@@ -50,7 +50,6 @@ public final class Luckyblock extends JavaPlugin {
 
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
-    ArrayList<String> about=new ArrayList<>();
     public class BlockBreak implements Listener {
         //ブロック破壊されたとき
         @EventHandler
@@ -250,10 +249,6 @@ public final class Luckyblock extends JavaPlugin {
             }else{
                 System.out.println("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
-        }else if(cmd.getName().equalsIgnoreCase("lbabout")){
-            for(String ab:about){
-                sender.sendMessage(ab+System.lineSeparator());
-            }
         }
         return false;
     }
@@ -262,9 +257,6 @@ public final class Luckyblock extends JavaPlugin {
     public void onEnable() {
         if(!getDataFolder().exists()){
             new File(String.valueOf(getDataFolder().toPath())).mkdir();
-        }
-        if(!new File(getDataFolder().getPath()+"/classes").exists()){
-            new File(getDataFolder().toPath()+"/classes").mkdir();
         }
         File f=new File(String.valueOf(getDataFolder()));
         File[] files=f.listFiles();       //牛召喚
@@ -277,24 +269,6 @@ public final class Luckyblock extends JavaPlugin {
                 } catch (IOException e) {
                     broadcastMessage(e.toString());
                 }});
-            }
-        }
-        f=new File(getDataFolder().getPath()+"/classes");
-        files=f.listFiles();
-        for(int j=0;j<files.length;j++){
-            try {
-                Class<?> clazz=Class.forName(files[j].getPath());
-                koufu n=(koufu)clazz.newInstance();
-                for(risuto l:n.getRisuto()){
-                    i.add(l);
-                }
-                about.add(n.getAbout());
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                System.out.println("クラスがおかしいです");
             }
         }
         //code by lenlino
