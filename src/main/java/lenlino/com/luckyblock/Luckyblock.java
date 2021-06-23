@@ -5,7 +5,6 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.block.ShulkerBox;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
@@ -20,11 +19,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
@@ -38,9 +39,6 @@ import org.bukkit.util.BlockIterator;
 
 import java.io.File;
 import  java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
@@ -52,6 +50,9 @@ public final class Luckyblock extends JavaPlugin {
 
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
+
+
+
     public class BlockBreak implements Listener {
         //ブロック破壊されたとき
         @EventHandler
@@ -103,6 +104,10 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void ClickEvent(PlayerInteractEvent e){
+            List<String> lore = new ArrayList<String>();
+            lore.add("Don't read!");
+            lore.add(" Don't read!");
+            lore.add(" Don't read!");
             if(e.getItem()!=null) {
                 if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
                     if (e.getItem().getItemMeta().getLore().size() == 3) {
@@ -114,7 +119,7 @@ public final class Luckyblock extends JavaPlugin {
                             }
                         }
                     }
-                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")  && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
                     e.getItem().setAmount(e.getItem().getAmount() - 1);
                     e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
                     ItemStack item = new ItemStack(Material.STICK);
@@ -138,14 +143,16 @@ public final class Luckyblock extends JavaPlugin {
                     } else {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
-                }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")){
-                    if(!e.getPlayer().hasMetadata("noDeath")&&e.getPlayer().hasMetadata("noDeath1")&&e.getPlayer().hasMetadata("noDeath0")) {
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§c§lデス回避棒")) {
+                    if (!e.getPlayer().hasMetadata("noDeath") && e.getPlayer().hasMetadata("noDeath1") && e.getPlayer().hasMetadata("noDeath0")) {
                         e.getItem().setAmount(e.getItem().getAmount() - 1);
                         e.getPlayer().sendMessage("デスノートの死に耐えられるようになった");
                         e.getPlayer().setMetadata("noDeath", new FixedMetadataValue(plugin, e.getPlayer().getLocation()));
-                    }else{
+                    } else {
                         e.getPlayer().sendMessage("§cあなたは既にデスノートの死から耐えれてます");
                     }
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
+                    e.getPlayer().setHealth(0);
                 }
             }
         }
@@ -263,11 +270,10 @@ public final class Luckyblock extends JavaPlugin {
         File f=new File(String.valueOf(getDataFolder()));
         File[] files=f.listFiles();       //牛召喚
         for(int j=0;j< files.length;j++){
-            if(files[j].isFile()&&files[j].getName().matches(".*\\.nbt")){
+            if(files[j].isFile()&&!(files[j].getName()).equals("magma.nbt")){
                 int finalJ = j;
-                File[] finalFiles = files;
                 i.add(b->{try {
-                    Structure.placeStructure(finalFiles[finalJ], b.getBlock().getLocation(), false, false);
+                    Structure.placeStructure(files[finalJ], b.getBlock().getLocation(), false, false);
                 } catch (IOException e) {
                     broadcastMessage(e.toString());
                 }});
@@ -330,6 +336,28 @@ public final class Luckyblock extends JavaPlugin {
             ItemDrop(Material.DIAMOND_BOOTS,1,b);
             ItemDrop(Material.DIAMOND_HELMET,1,b);
             ItemDrop(Material.DIAMOND_LEGGINGS,1,b);
+        });
+        i.add(b -> {
+            ItemDrop(Material.LEATHER_CHESTPLATE,1,b);
+            ItemDrop(Material.LEATHER_BOOTS,1,b);
+            ItemDrop(Material.LEATHER_HELMET,1,b);
+            ItemDrop(Material.LEATHER_LEGGINGS,1,b);
+        });
+        i.add(b -> {
+            ItemDrop(Material.IRON_CHESTPLATE,1,b);
+            ItemDrop(Material.IRON_BOOTS,1,b);
+            ItemDrop(Material.IRON_HELMET,1,b);
+            ItemDrop(Material.IRON_LEGGINGS,1,b);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lDon't read!");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b -> {
+            b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),50);
         });
         //code by koufu193
         File data=new File(getDataFolder()+"/magma.nbt");
@@ -397,36 +425,6 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             entity1.getEquipment().setItemInMainHand(item);
             entity1.setAI(true);
-        });
-        i.add(b->{
-            ItemStack syuru=new ItemStack(Material.SHULKER_BOX);
-            syuru.getItemMeta().setDisplayName("koufu`s kit");
-            BlockStateMeta bsm = (BlockStateMeta) syuru.getItemMeta();
-            ShulkerBox box = (ShulkerBox) bsm.getBlockState();
-            Inventory inv = box.getInventory();
-            //内容
-            ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
-            item.setAmount(8);
-            inv.addItem(item);
-            item=new ItemStack(Material.DIAMOND_HELMET);
-            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
-            inv.addItem(item);
-            item=new ItemStack(Material.DIAMOND_CHESTPLATE);
-            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
-            inv.addItem(item);
-            item=new ItemStack(Material.DIAMOND_LEGGINGS);
-            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
-            inv.addItem(item);
-            item=new ItemStack(Material.DIAMOND_BOOTS);
-            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
-            inv.addItem(item);
-            item=new ItemStack(Material.DIAMOND_SWORD);
-            item.addEnchantment(Enchantment.DAMAGE_ALL,new Random().nextInt(4)+1);
-            //シュル箱にアイテム入れるやつ
-            inv.addItem(item);
-            bsm.setBlockState(box);
-            syuru.setItemMeta(bsm);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), syuru);
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
