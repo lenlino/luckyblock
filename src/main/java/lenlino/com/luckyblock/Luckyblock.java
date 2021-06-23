@@ -359,7 +359,6 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b -> {
             b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),50);
         });
-
         //code by koufu193
         File data=new File(getDataFolder()+"/magma.nbt");
         if(data.exists()) {
