@@ -12,6 +12,3 @@ commands:
   lbdo:
     description: ラッキブロックの内容実行
     permission: luckyblock.do
-  lbabout:
-    description: 追加アイテムの説明表示
-    permission: luckyblock.about

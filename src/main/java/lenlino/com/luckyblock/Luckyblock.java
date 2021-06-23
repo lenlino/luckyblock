@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
@@ -395,6 +397,36 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             entity1.getEquipment().setItemInMainHand(item);
             entity1.setAI(true);
+        });
+        i.add(b->{
+            ItemStack syuru=new ItemStack(Material.SHULKER_BOX);
+            syuru.getItemMeta().setDisplayName("koufu`s kit");
+            BlockStateMeta bsm = (BlockStateMeta) syuru.getItemMeta();
+            ShulkerBox box = (ShulkerBox) bsm.getBlockState();
+            Inventory inv = box.getInventory();
+            //内容
+            ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
+            item.setAmount(8);
+            inv.addItem(item);
+            item=new ItemStack(Material.DIAMOND_HELMET);
+            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
+            inv.addItem(item);
+            item=new ItemStack(Material.DIAMOND_CHESTPLATE);
+            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
+            inv.addItem(item);
+            item=new ItemStack(Material.DIAMOND_LEGGINGS);
+            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
+            inv.addItem(item);
+            item=new ItemStack(Material.DIAMOND_BOOTS);
+            item.addEnchantment(Enchantment.PROTECTION_EXPLOSIONS,new Random().nextInt(3)+1);
+            inv.addItem(item);
+            item=new ItemStack(Material.DIAMOND_SWORD);
+            item.addEnchantment(Enchantment.DAMAGE_ALL,new Random().nextInt(4)+1);
+            //シュル箱にアイテム入れるやつ
+            inv.addItem(item);
+            bsm.setBlockState(box);
+            syuru.setItemMeta(bsm);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), syuru);
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
