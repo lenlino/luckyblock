@@ -264,7 +264,6 @@ public final class Luckyblock extends JavaPlugin {
                 vex.addPassenger(tnt);
             }
         });
-
         //ウィザー
         i.add(b -> b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.WITHER));
         //TNTアイテム
