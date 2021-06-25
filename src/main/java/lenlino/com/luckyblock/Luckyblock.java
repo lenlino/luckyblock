@@ -104,10 +104,6 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void ClickEvent(PlayerInteractEvent e){
-            List<String> lore = new ArrayList<String>();
-            lore.add("Don't read!");
-            lore.add(" Don't read!");
-            lore.add(" Don't read!");
             if(e.getItem()!=null) {
                 if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
                     if (e.getItem().getItemMeta().getLore().size() == 3) {
@@ -142,6 +138,20 @@ public final class Luckyblock extends JavaPlugin {
                         }
                     } else {
                         e.getPlayer().sendMessage("§4経験値が足りません");
+                    }
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§l食べれる紙") && e.getPlayer().getFoodLevel()!=20) {
+                    e.getPlayer().getInventory().removeItem(e.getItem());
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
+                    e.getPlayer().setHealth(0);
+                    e.getPlayer().sendMessage("Don't read! Don't read! Don't read!");
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getClickedBlock().getType()==Material.DIRT) {
+                    for (int x = -1;x <= 1;x++) {
+                        for (int y = -1;y<=1; y++) {
+                            Location l = e.getClickedBlock().getLocation();
+                            l.setX(l.getX()+x);
+                            l.setZ(l.getZ()+y);
+                            l.getBlock().setType(Material.COARSE_DIRT);
+                        }
                     }
                 }
             }
@@ -323,6 +333,20 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b -> {
             b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),50);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.PAPER);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§l食べれる紙");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.GOLDEN_HOE);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lBighoe");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
 
         //code by koufu193
