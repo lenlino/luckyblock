@@ -145,16 +145,18 @@ public final class Luckyblock extends JavaPlugin {
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
                     e.getPlayer().setMetadata("LuckyDead",new FixedMetadataValue(plugin,e.getPlayer().getLocation().clone()));
                     e.getPlayer().setHealth(0);
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction()==Action.RIGHT_CLICK_BLOCK) {
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction()==Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType()==Material.GRASS_BLOCK || e.getClickedBlock().getType()==Material.DIRT))  {
                     Location l = e.getClickedBlock().getLocation();
                     l.setX(l.getX()-1);
                     l.setZ(l.getZ()-1);
                     for (int x = 0;x <3;x++) {
                         for (int y = 0;y<3; y++) {
-                            if (l.getBlock().getType()==Material.GRASS_BLOCK) {
-                                l.getBlock().setType(Material.FARMLAND);
-                            }else if(l.getBlock().getType()==Material.DIRT) {
-                                l.getBlock().setType(Material.FARMLAND);
+                            if (x!=1||y!=1) {
+                                if (l.getBlock().getType()==Material.GRASS_BLOCK) {
+                                    l.getBlock().setType(Material.FARMLAND);
+                                }else if(l.getBlock().getType()==Material.DIRT) {
+                                    l.getBlock().setType(Material.FARMLAND);
+                                }
                             }
                             l.setX(l.getX()+1);
                         }
