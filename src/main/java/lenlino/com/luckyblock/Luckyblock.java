@@ -40,6 +40,7 @@ import org.bukkit.util.BlockIterator;
 import java.io.File;
 import  java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -142,18 +143,32 @@ public final class Luckyblock extends JavaPlugin {
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§l食べれる紙") && e.getPlayer().getFoodLevel()!=20) {
                     e.getPlayer().getInventory().removeItem(e.getItem());
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
+                    e.getPlayer().setMetadata("LuckyDead",new FixedMetadataValue(plugin,e.getPlayer().getLocation().clone()));
                     e.getPlayer().setHealth(0);
-                    e.getPlayer().sendMessage("Don't read! Don't read! Don't read!");
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getClickedBlock().getType()==Material.DIRT) {
-                    for (int x = -1;x <= 1;x++) {
-                        for (int y = -1;y<=1; y++) {
-                            Location l = e.getClickedBlock().getLocation();
-                            l.setX(l.getX()+x);
-                            l.setZ(l.getZ()+y);
-                            l.getBlock().setType(Material.COARSE_DIRT);
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction()==Action.RIGHT_CLICK_BLOCK) {
+                    Location l = e.getClickedBlock().getLocation();
+                    l.setX(l.getX()-1);
+                    l.setZ(l.getZ()-1);
+                    for (int x = 0;x <3;x++) {
+                        for (int y = 0;y<3; y++) {
+                            if (l.getBlock().getType()==Material.GRASS_BLOCK) {
+                                l.getBlock().setType(Material.FARMLAND);
+                            }else if(l.getBlock().getType()==Material.DIRT) {
+                                l.getBlock().setType(Material.FARMLAND);
+                            }
+                            l.setX(l.getX()+1);
                         }
+                        l.setX(l.getX()-3);
+                        l.setZ(l.getZ()+1);
                     }
                 }
+            }
+        }
+        @EventHandler
+        public void DeathPlayerEvent(PlayerDeathEvent e){
+            if(e.getEntity().hasMetadata("LuckyDead")){
+                e.setDeathMessage(e.getEntity().getDisplayName()+"は本の物理攻撃によって殺された");
+                e.getEntity().removeMetadata("LuckyDead",plugin);
             }
         }
         private Block getCursorFocusBlock(Player player) {
@@ -342,7 +357,7 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         i.add(b -> {
-            ItemStack item = new ItemStack(Material.GOLDEN_HOE);
+            ItemStack item = new ItemStack(Material.IRON_HOE);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§lBighoe");
             item.setItemMeta(meta);
