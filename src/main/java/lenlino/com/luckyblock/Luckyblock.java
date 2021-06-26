@@ -4,6 +4,8 @@ import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,9 +23,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,10 +39,7 @@ import org.bukkit.util.BlockIterator;
 
 import java.io.File;
 import  java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.ArrayList;
+import java.util.*;
 
 import static org.bukkit.Bukkit.*;
 
@@ -291,8 +288,6 @@ public final class Luckyblock extends JavaPlugin {
                 vex.addPassenger(tnt);
             }
         });
-        //ウィザー
-        i.add(b -> b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.WITHER));
         //TNTアイテム
         i.add(b -> b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), new ItemStack(Material.TNT, 32)));
         i.add(b->{
@@ -364,6 +359,25 @@ public final class Luckyblock extends JavaPlugin {
             meta.setDisplayName("§lBighoe");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.LEATHER_BOOTS);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lSuperSpeedBoots");
+            AttributeModifier m = new AttributeModifier(UUID.randomUUID(),"speed", 10, AttributeModifier.Operation.ADD_NUMBER,EquipmentSlot.FEET);
+            meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED,m);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.ELYTRA);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("SuperRocketBoots");
+            AttributeModifier m = new AttributeModifier(UUID.randomUUID(), "tough",8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.CHEST);
+            meta.addAttributeModifier(Attribute.GENERIC_ARMOR,m);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
 
         //code by koufu193
