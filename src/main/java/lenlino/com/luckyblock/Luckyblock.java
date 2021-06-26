@@ -223,6 +223,16 @@ public final class Luckyblock extends JavaPlugin {
                 e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), createskull(1));
             }
         }
+
+        @EventHandler
+        public void damageevent(EntityDamageByEntityEvent e) {
+            LivingEntity l = (LivingEntity) e.getDamager();
+            if (Objects.requireNonNull(Objects.requireNonNull(l.getEquipment()).getItemInMainHand().getItemMeta()).getDisplayName().equals("§lFlySword")) {
+                LivingEntity j = (LivingEntity) e.getEntity();
+                PotionEffect p = new PotionEffect(PotionEffectType.LEVITATION,10,30);
+                j.addPotionEffect(p);
+            }
+        }
     }
 
     @Override
@@ -373,12 +383,39 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b -> {
             ItemStack item = new ItemStack(Material.ELYTRA);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("SuperRocketBoots");
+            meta.setDisplayName("Armored Elytra");
             AttributeModifier m = new AttributeModifier(UUID.randomUUID(), "tough",8, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.CHEST);
             meta.addAttributeModifier(Attribute.GENERIC_ARMOR,m);
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
+
+        i.add(b -> {
+            for (int i = 0; i<6;i++) {
+                Entity bat = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.BAT);
+                Entity s = b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.SKELETON);
+                bat.addPassenger(s);
+            }
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("bat");
+            meta.addEnchant(Enchantment.KNOCKBACK,30, true);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.DIAMOND_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(ChatColor.RESET+"§lFlySword");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+
 
         //code by koufu193
         File data=new File(getDataFolder()+"/magma.nbt");
