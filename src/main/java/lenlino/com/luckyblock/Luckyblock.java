@@ -253,6 +253,9 @@ public final class Luckyblock extends JavaPlugin {
                         j.addPotionEffect(p);
                     } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§lRideStick")) {
                         e.getEntity().addPassenger(e.getDamager());
+                    } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cDGoldSword")) {
+                        ItemStack item = new ItemStack(Material.GOLD_INGOT,1);
+                        e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
                     }
                 }
             }
@@ -540,6 +543,31 @@ public final class Luckyblock extends JavaPlugin {
 
         i.add(b -> {
             b.getBlock().getWorld().strikeLightning(b.getPlayer().getLocation());
+        });
+
+        i.add(b -> {
+            Horse h = (Horse) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.HORSE);
+            h.setJumpStrength(2);
+            h.setTamed(true);
+            h.setOwner(b.getPlayer());
+            h.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(1);
+            h.setCustomNameVisible(true);
+            h.setCustomName("§cRampage horse");
+        });
+
+        i.add(b -> {
+            for (int i=0;i<11;i++) {
+                Wolf w = (Wolf) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.WOLF);
+                w.setOwner(b.getPlayer());
+            }
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cDGoldSword");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
 
 
