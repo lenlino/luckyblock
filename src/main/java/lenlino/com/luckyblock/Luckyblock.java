@@ -86,16 +86,16 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void TNTBowHitEvent(ProjectileHitEvent e){
-            if(e.getEntity().hasMetadata("TNTarrow")){
-                if(e.getHitEntity()==null) {
+            if(e.getEntity().hasMetadata("TNTarrow")) {
+                if (e.getHitEntity() == null) {
                     Location location = e.getEntity().getLocation();
                     location.setY(e.getEntity().getLocation().getY() - 0.25);
                     e.getHitBlock().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
                     e.getEntity().removeMetadata("TNTarrow", plugin);
-                }else{
-                    Location location =e.getHitEntity().getLocation();
-                    location.setY(location.getY()-0.25);
-                    e.getHitEntity().getWorld().spawnEntity(location,EntityType.PRIMED_TNT);
+                } else {
+                    Location location = e.getHitEntity().getLocation();
+                    location.setY(location.getY() - 0.25);
+                    e.getHitEntity().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
                     e.getEntity().removeMetadata("TNTarrow", plugin);
                 }
             }
@@ -160,7 +160,25 @@ public final class Luckyblock extends JavaPlugin {
                         l.setX(l.getX()-3);
                         l.setZ(l.getZ()+1);
                     }
+                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lFireStick")) {
+                    LivingEntity living=(LivingEntity)e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(),EntityType.FIREBALL);
+                    living.setVelocity(e.getPlayer().getVelocity());
+                    Location location=living.getLocation();
+                    location.setY(location.getY()+1);
+                    location.add(e.getPlayer().getVelocity());
+                    living.teleport(location);
                 }
+            }
+        }
+        @EventHandler
+        public void WaterEvent(PlayerBucketEmptyEvent e){
+            e.setCancelled(true);
+            if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
+                e.getBlock().setType(Material.WATER);
+            }else if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteMagmaBucket")){
+                e.getBlock().setType(Material.LAVA);
+            }else{
+                e.setCancelled(false);
             }
         }
         @EventHandler
@@ -226,12 +244,27 @@ public final class Luckyblock extends JavaPlugin {
 
         @EventHandler
         public void damageevent(EntityDamageByEntityEvent e) {
-            LivingEntity l = (LivingEntity) e.getDamager();
-            if (Objects.requireNonNull(Objects.requireNonNull(l.getEquipment()).getItemInMainHand().getItemMeta()).getDisplayName().equals("§lFlySword")) {
-                LivingEntity j = (LivingEntity) e.getEntity();
-                PotionEffect p = new PotionEffect(PotionEffectType.LEVITATION,10,30);
-                j.addPotionEffect(p);
+            if (e.getDamager().getType().isAlive()) {
+                LivingEntity l = (LivingEntity) e.getDamager();
+                if (l.getEquipment().getItemInMainHand().hasItemMeta()) {
+                    if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§lFlySword")) {
+                        LivingEntity j = (LivingEntity) e.getEntity();
+                        PotionEffect p = new PotionEffect(PotionEffectType.LEVITATION, 10, 30);
+                        j.addPotionEffect(p);
+                    } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§lRideStick")) {
+                        e.getEntity().addPassenger(e.getDamager());
+                    }
+                }
             }
+        }
+    }
+    @EventHandler
+    public void getWaterEvent(PlayerBucketFillEvent e){
+        e.setCancelled(true);
+        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")){
+            e.getBlock().setType(Material.AIR);
+        }else{
+            e.setCancelled(false);
         }
     }
 
@@ -354,7 +387,7 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         i.add(b -> {
-            b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),50);
+            b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),10);
         });
         i.add(b -> {
             ItemStack item = new ItemStack(Material.PAPER);
@@ -415,6 +448,99 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
 
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lRideStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            EnderCrystal enderCrystal=(EnderCrystal)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.ENDER_CRYSTAL);;
+            enderCrystal.setRotation(200,200);
+
+        });
+        i.add(b -> {
+            LivingEntity e = (LivingEntity) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.SLIME);
+            Slime slime=(Slime)e;
+            slime.setSize(25);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§lFireStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.REDSTONE);
+            ItemMeta meta = item.getItemMeta();
+            AttributeModifier m = new AttributeModifier(UUID.randomUUID(),"quick", 10, AttributeModifier.Operation.ADD_NUMBER,EquipmentSlot.OFF_HAND);
+            meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH,m);
+            meta.setDisplayName("§c§lHeart");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            for (int i =0;i<6;i++) {
+                Wolf w = (Wolf) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.WOLF);
+                w.setAngry(true);
+            }
+        });
+
+        i.add(b -> {
+            for (int i=0;i<3;i++) {
+                ItemStack item = new ItemStack(Material.BUCKET);
+                ItemStack item2 = new ItemStack(Material.COD_BUCKET);
+                ItemStack item3 = new ItemStack(Material.LAVA_BUCKET);
+                ItemStack item4 = new ItemStack(Material.MILK_BUCKET);
+                ItemStack item5 = new ItemStack(Material.PUFFERFISH_BUCKET);
+                ItemStack item6 = new ItemStack(Material.SALMON_BUCKET);
+                ItemStack item7 = new ItemStack(Material.TROPICAL_FISH_BUCKET);
+                ItemStack item8 = new ItemStack(Material.WATER_BUCKET);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item2);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item3);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item4);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item5);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item6);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item7);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item8);
+            }
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.WATER_BUCKET);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§c§lInfiniteWaterBucket");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.WATER_BUCKET);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§c§lInfiniteMagmaBucket");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.BUCKET);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§c§lInfiniteNoneBucket");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b -> {
+            b.getBlock().getWorld().generateTree(b.getBlock().getLocation(),TreeType.JUNGLE);
+        });
+
+        i.add(b -> {
+            b.getBlock().getWorld().strikeLightning(b.getPlayer().getLocation());
+        });
 
 
         //code by koufu193
