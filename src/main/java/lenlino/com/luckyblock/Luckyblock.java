@@ -77,7 +77,7 @@ public final class Luckyblock extends JavaPlugin {
                 e.getProjectile().addPassenger(e.getEntity());
             } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
                 e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(plugin,e.getProjectile().getLocation().clone()));
-            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow")) {
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow") && e.getEntity().getNearbyEntities(6,6,6).size()!=0) {
                 List<Entity> near = e.getEntity().getNearbyEntities(5,5,5);
                 near.get(0).setInvulnerable(true);
                 e.getProjectile().addPassenger(near.get(0));
@@ -228,7 +228,12 @@ public final class Luckyblock extends JavaPlugin {
         public void CreatureSpawnEvent(CreatureSpawnEvent e) {
             double d;
             d = Math.random();
-            if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
+            List<EntityType> spawn = new ArrayList<EntityType> ();
+            spawn.add(EntityType.ZOMBIE);
+            spawn.add(EntityType.SKELETON);
+            spawn.add(EntityType.ZOMBIFIED_PIGLIN);
+            spawn.add(EntityType.CREEPER);
+            if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL) && spawn.contains(e.getEntityType())) {
                 e.getEntity().setMetadata("mob", new FixedMetadataValue(plugin,e.getEntity().getLocation().clone()));
                 e.getEntity().setCustomName("LuckyMob");
                 e.getEntity().setCustomNameVisible(true);
@@ -254,8 +259,14 @@ public final class Luckyblock extends JavaPlugin {
                     } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§lRideStick")) {
                         e.getEntity().addPassenger(e.getDamager());
                     } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cDGoldSword")) {
-                        ItemStack item = new ItemStack(Material.GOLD_INGOT,1);
+                        ItemStack item = new ItemStack(Material.GOLD_NUGGET,1);
                         e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
+                    } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§a§lHealStick") && e.getEntityType()==EntityType.PLAYER) {
+                        LivingEntity j = (LivingEntity) e.getEntity();
+                        j.setHealth(((LivingEntity) e.getEntity()).getHealth()+3);
+                    } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§7§lBone of life") && e.getEntityType().equals(EntityType.ZOMBIE_VILLAGER)) {
+                        e.getEntity().getWorld().spawnEntity(e.getEntity().getLocation(),EntityType.VILLAGER);
+                        e.getEntity().remove();
                     }
                 }
             }
@@ -569,6 +580,44 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.CARROT_ON_A_STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§a§lHealStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.BONE);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§7§lBone of life");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.ENCHANTING_TABLE,1);
+            ItemStack item1 = new ItemStack(Material.BOOKSHELF,21);
+            ItemStack item3 = new ItemStack(Material.LAPIS_LAZULI,32);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item1);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item3);
+        });
+
+        i.add(b -> {
+            for (int i=0;i<11;i++){
+                for (int p=0;p<11;p++) {
+                    Location l = b.getBlock().getLocation().add(i,0,p);
+                    l.getBlock().setType(Material.GOLD_BLOCK);
+                }
+            }
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.)
+        })
 
 
         //code by koufu193
