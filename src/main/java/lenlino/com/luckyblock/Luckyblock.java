@@ -138,7 +138,8 @@ public final class Luckyblock extends JavaPlugin {
                         e.getPlayer().sendMessage("§4経験値が足りません");
                     }
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§l食べれる紙") && e.getPlayer().getFoodLevel()!=20) {
-                    e.getPlayer().getInventory().removeItem(e.getItem());
+                    e.getItem().setAmount(e.getItem().getAmount()-1);
+                    e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel()+2);
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
                     e.getPlayer().setMetadata("LuckyDead",new FixedMetadataValue(plugin,e.getPlayer().getLocation().clone()));
                     e.getPlayer().setHealth(0);
@@ -161,7 +162,7 @@ public final class Luckyblock extends JavaPlugin {
                         l.setZ(l.getZ()+1);
                     }
                 } else if(e.getItem().getItemMeta().getDisplayName().equals("§lFireStick")) {
-                    LivingEntity living=(LivingEntity)e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(),EntityType.FIREBALL);
+                    Fireball living=(Fireball) e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(),EntityType.FIREBALL);
                     living.setVelocity(e.getPlayer().getVelocity());
                     Location location=living.getLocation();
                     location.setY(location.getY()+1);
@@ -175,8 +176,6 @@ public final class Luckyblock extends JavaPlugin {
             e.setCancelled(true);
             if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
                 e.getBlock().setType(Material.WATER);
-            }else if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteMagmaBucket")){
-                e.getBlock().setType(Material.LAVA);
             }else{
                 e.setCancelled(false);
             }
@@ -401,7 +400,7 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
         });
         i.add(b -> {
-            b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),10);
+            b.getBlock().getWorld().createExplosion(b.getBlock().getLocation(),3);
         });
         i.add(b -> {
             ItemStack item = new ItemStack(Material.PAPER);
@@ -535,13 +534,6 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b -> {
-            ItemStack item = new ItemStack(Material.WATER_BUCKET);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§c§lInfiniteMagmaBucket");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b -> {
             ItemStack item = new ItemStack(Material.BUCKET);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§c§lInfiniteNoneBucket");
@@ -616,8 +608,31 @@ public final class Luckyblock extends JavaPlugin {
         });
 
         i.add(b -> {
-            ItemStack item = new ItemStack(Material.)
-        })
+            b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PANDA);
+        });
+
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.SHULKER_SHELL,5);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
+        i.add(b -> {
+            PotionEffect p = new PotionEffect(PotionEffectType.GLOWING,1000,1);
+            b.getPlayer().addPotionEffect(p);
+        });
+
+        i.add(b -> {
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.IRON_AXE));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.STONE_AXE));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.GOLDEN_AXE));
+        });
+
+        i.add(b -> {
+            PotionEffect p = new PotionEffect(PotionEffectType.LEVITATION, 100, 30);
+            PotionEffect p2 = new PotionEffect(PotionEffectType.SLOW_FALLING,500,1);
+            b.getPlayer().addPotionEffect(p);
+            b.getPlayer().addPotionEffect(p2);
+        });
 
 
         //code by koufu193
