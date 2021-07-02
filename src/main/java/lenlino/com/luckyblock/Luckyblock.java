@@ -113,7 +113,7 @@ public final class Luckyblock extends JavaPlugin {
                             }
                         }
                     }
-                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && e.getClickedBlock().getType() == (Material.GOLD_BLOCK)) {
+                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && Objects.requireNonNull(e.getClickedBlock()).getType() == (Material.GOLD_BLOCK)) {
                     e.getItem().setAmount(e.getItem().getAmount() - 1);
                     e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
                     ItemStack item = new ItemStack(Material.STICK);
