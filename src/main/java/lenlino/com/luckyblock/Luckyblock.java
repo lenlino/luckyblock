@@ -232,7 +232,7 @@ public final class Luckyblock extends JavaPlugin {
             spawn.add(EntityType.SKELETON);
             spawn.add(EntityType.ZOMBIFIED_PIGLIN);
             spawn.add(EntityType.CREEPER);
-            if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL) && spawn.contains(e.getEntityType())) {
+            if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
                 e.getEntity().setMetadata("mob", new FixedMetadataValue(plugin,e.getEntity().getLocation().clone()));
                 e.getEntity().setCustomName("LuckyMob");
                 e.getEntity().setCustomNameVisible(true);
