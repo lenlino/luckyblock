@@ -12,6 +12,3 @@ commands:
   lbdo:
     description: ラッキーブロック内容実行
     permission: luckyblock.do
-  lbdelte:
-    description: ラッキーブロックの内容削除
-    permission: luckyblock.delete
