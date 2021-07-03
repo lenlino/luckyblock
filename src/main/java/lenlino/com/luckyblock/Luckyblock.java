@@ -9,6 +9,8 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.libs.org.apache.maven.artifact.repository.metadata.Metadata;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -48,9 +51,6 @@ public final class Luckyblock extends JavaPlugin {
 
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
-
-
-
     public class BlockBreak implements Listener {
         //ブロック破壊されたとき
         @EventHandler
@@ -65,10 +65,8 @@ public final class Luckyblock extends JavaPlugin {
         }
         @EventHandler
         public void placeblock(BlockPlaceEvent b) {
-
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
-
             }
         }
         @EventHandler
@@ -103,81 +101,80 @@ public final class Luckyblock extends JavaPlugin {
         @EventHandler
         public void ClickEvent(PlayerInteractEvent e){
             if(e.getItem()!=null) {
-                if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
-                    if (e.getItem().getItemMeta().getLore().size() == 3) {
-                        if (e.getItem().getItemMeta().getLore().get(2).equals("create by koufu")) {
-                            if (e.getPlayer().getFoodLevel() < 20) {
-                                e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 5);
-                            } else {
-                                e.getPlayer().sendMessage("§cもうお腹がいっぱいです");
-                            }
-                        }
-                    }
-                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)") && Objects.requireNonNull(e.getClickedBlock()).getType() == (Material.GOLD_BLOCK)) {
-                    e.getItem().setAmount(e.getItem().getAmount() - 1);
-                    e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
-                    ItemStack item = new ItemStack(Material.STICK);
-                    ItemMeta meta = item.getItemMeta();
-                    ArrayList<String> lis = new ArrayList<String>();
-                    lis.add("経験値を1レべ消費して雷が打てる");
-                    meta.setDisplayName("§e§l雷の杖");
-                    meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                    meta.setLore(lis);
-                    item.setItemMeta(meta);
-                    e.getPlayer().getInventory().addItem(item);
-                } else if (e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖") && e.getItem().getItemMeta().getLore().get(0).equals("経験値を1レべ消費して雷が打てる")) {
-                    Block focusBlock = getCursorFocusBlock(e.getPlayer());
-                    if (1 <= e.getPlayer().getLevel()) {
-                        if (focusBlock != null) {
-                            focusBlock.getWorld().strikeLightning(focusBlock.getLocation());
-                            e.getPlayer().giveExpLevels(-1);
-                        } else {
-                            e.getPlayer().sendMessage("§4100ブロック以内に空気以外のブロックが見つかりませんでした");
-                        }
-                    } else {
-                        e.getPlayer().sendMessage("§4経験値が足りません");
-                    }
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§l食べれる紙") && e.getPlayer().getFoodLevel()!=20) {
-                    e.getItem().setAmount(e.getItem().getAmount()-1);
-                    e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel()+2);
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
-                    e.getPlayer().setMetadata("LuckyDead",new FixedMetadataValue(plugin,e.getPlayer().getLocation().clone()));
-                    e.getPlayer().setHealth(0);
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction()==Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType()==Material.GRASS_BLOCK || e.getClickedBlock().getType()==Material.DIRT))  {
-                    Location l = e.getClickedBlock().getLocation();
-                    l.setX(l.getX()-1);
-                    l.setZ(l.getZ()-1);
-                    for (int x = 0;x <3;x++) {
-                        for (int y = 0;y<3; y++) {
-                            if (x!=1||y!=1) {
-                                if (l.getBlock().getType()==Material.GRASS_BLOCK) {
-                                    l.getBlock().setType(Material.FARMLAND);
-                                }else if(l.getBlock().getType()==Material.DIRT) {
-                                    l.getBlock().setType(Material.FARMLAND);
+                if(e.getItem().getItemMeta()!=null) {
+                    if(e.getItem().getItemMeta().getDisplayName()!=null) {
+                        if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
+                            if (e.getItem().getItemMeta().getLore().size() == 3) {
+                                if (e.getItem().getItemMeta().getLore().get(2).equals("create by koufu")) {
+                                    if (e.getPlayer().getFoodLevel() < 40) {
+                                        e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 5);
+                                    } else {
+                                        e.getPlayer().sendMessage("§cもうお腹がいっぱいです");
+                                    }
                                 }
                             }
-                            l.setX(l.getX()+1);
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§e雷の杖(未完成)")) {
+                            if(e.getClickedBlock()!=null) {
+                                if(e.getClickedBlock().getType()==Material.GOLD_BLOCK) {
+                                    e.getItem().setAmount(e.getItem().getAmount() - 1);
+                                    e.getClickedBlock().getWorld().strikeLightningEffect(e.getClickedBlock().getLocation());
+                                    ItemStack item = new ItemStack(Material.STICK);
+                                    ItemMeta meta = item.getItemMeta();
+                                    ArrayList<String> lis = new ArrayList<String>();
+                                    lis.add("経験値を1レべ消費して雷が打てる");
+                                    meta.setDisplayName("§e§l雷の杖");
+                                    meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                                    meta.setLore(lis);
+                                    item.setItemMeta(meta);
+                                    e.getPlayer().getInventory().addItem(item);
+                                }
+                            }
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§e§l雷の杖") && e.getItem().getItemMeta().getLore().get(0).equals("経験値を1レべ消費して雷が打てる")) {
+                            Block focusBlock = getCursorFocusBlock(e.getPlayer());
+                            if (1 <= e.getPlayer().getLevel()) {
+                                if (focusBlock != null) {
+                                    focusBlock.getWorld().strikeLightning(focusBlock.getLocation());
+                                    e.getPlayer().giveExpLevels(-1);
+                                } else {
+                                    e.getPlayer().sendMessage("§4100ブロック以内に空気以外のブロックが見つかりませんでした");
+                                }
+                            } else {
+                                e.getPlayer().sendMessage("§4経験値が足りません");
+                            }
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§l食べれる紙") && e.getPlayer().getFoodLevel() != 20) {
+                            e.getItem().setAmount(e.getItem().getAmount() - 1);
+                            e.getPlayer().setFoodLevel(e.getPlayer().getFoodLevel() + 2);
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§lDon't read!")) {
+                            e.getPlayer().setMetadata("LuckyDead", new FixedMetadataValue(plugin, e.getPlayer().getLocation().clone()));
+                            e.getPlayer().setHealth(0);
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)) {
+                            Location l = e.getClickedBlock().getLocation();
+                            l.setX(l.getX() - 1);
+                            l.setZ(l.getZ() - 1);
+                            for (int x = 0; x < 3; x++) {
+                                for (int y = 0; y < 3; y++) {
+                                    if (x != 1 || y != 1) {
+                                        if (l.getBlock().getType() == Material.GRASS_BLOCK) {
+                                            l.getBlock().setType(Material.FARMLAND);
+                                        } else if (l.getBlock().getType() == Material.DIRT) {
+                                            l.getBlock().setType(Material.FARMLAND);
+                                        }
+                                    }
+                                    l.setX(l.getX() + 1);
+                                }
+                                l.setX(l.getX() - 3);
+                                l.setZ(l.getZ() + 1);
+                            }
+                        } else if (e.getItem().getItemMeta().getDisplayName().equals("§lFireStick")) {
+                            Fireball living = (Fireball) e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(), EntityType.FIREBALL);
+                            living.setVelocity(e.getPlayer().getVelocity());
+                            Location location = living.getLocation();
+                            location.setY(location.getY() + 1);
+                            location.add(e.getPlayer().getVelocity());
+                            living.teleport(location);
                         }
-                        l.setX(l.getX()-3);
-                        l.setZ(l.getZ()+1);
                     }
-                } else if(e.getItem().getItemMeta().getDisplayName().equals("§lFireStick")) {
-                    Fireball living=(Fireball) e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(),EntityType.FIREBALL);
-                    living.setVelocity(e.getPlayer().getVelocity());
-                    Location location=living.getLocation();
-                    location.setY(location.getY()+1);
-                    location.add(e.getPlayer().getVelocity());
-                    living.teleport(location);
                 }
-            }
-        }
-        @EventHandler
-        public void WaterEvent(PlayerBucketEmptyEvent e){
-            e.setCancelled(true);
-            if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
-                e.getBlock().setType(Material.WATER);
-            }else{
-                e.setCancelled(false);
             }
         }
         @EventHandler
@@ -211,6 +208,24 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             if(e.getItem().isSimilar(item)){
                 i.get(10).onigiri(new BlockBreakEvent(e.getPlayer().getLocation().getBlock(),e.getPlayer()));
+            }
+        }
+        @EventHandler
+        public void WaterEvent(PlayerBucketEmptyEvent e){
+            e.setCancelled(true);
+            if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")){
+                e.getBlock().setType(Material.WATER);
+            }else{
+                e.setCancelled(false);
+            }
+        }
+        @EventHandler
+        public void BucketEvent(PlayerBucketFillEvent e){
+            e.setCancelled(true);
+            if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")){
+                e.getBlock().setType(Material.AIR);
+            }else{
+                e.setCancelled(false);
             }
         }
         @EventHandler
@@ -271,16 +286,6 @@ public final class Luckyblock extends JavaPlugin {
             }
         }
     }
-    @EventHandler
-    public void getWaterEvent(PlayerBucketFillEvent e){
-        e.setCancelled(true);
-        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")){
-            e.getBlock().setType(Material.AIR);
-        }else{
-            e.setCancelled(false);
-        }
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("lbget")) {
@@ -525,7 +530,6 @@ public final class Luckyblock extends JavaPlugin {
                 b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item8);
             }
         });
-
         i.add(b -> {
             ItemStack item = new ItemStack(Material.WATER_BUCKET);
             ItemMeta meta = item.getItemMeta();
@@ -709,8 +713,6 @@ public final class Luckyblock extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
-
-
     public ItemStack createskull(Integer index) {
         String base64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM5ZDVkNzhiM2ZlNzFjOWZhODk4MTk4OGY4MWNhMzdlYjlkZmFiYmY0NzdkZmI4OGNmMWJlN2U3YWFkMWUifX19";
         ItemStack skull = SkullCreator.itemFromBase64(base64,index);

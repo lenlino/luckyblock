@@ -7,8 +7,11 @@ commands:
     description: ラッキーブロック獲得
     permission: luckyblock.get
   lbgive:
-    description: ラッキブロック渡す
+    description: ラッキーブロック渡す
     permission: luckyblock.give
   lbdo:
-    description: ラッキブロックの内容実行
+    description: ラッキーブロック内容実行
     permission: luckyblock.do
+  lbdelte:
+    description: ラッキーブロックの内容削除
+    permission: luckyblock.delete
