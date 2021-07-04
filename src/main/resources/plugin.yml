@@ -12,3 +12,15 @@ commands:
   lbdo:
     description: ラッキーブロック内容実行
     permission: luckyblock.do
+  lbadd:
+    description: ドロップするアイテム追加
+    permission: luckyblock.add
+  lbgetlist:
+    description: 追加したアイテムの名まえ一覧表示
+    permission: luckyblock.getlist
+  lbremove:
+    description: 追加したアイテムを削除
+    permission: luckyblock.remove
+  lbreload:
+    description: このプラグインを再起動する
+    permission: luckyblock.reload

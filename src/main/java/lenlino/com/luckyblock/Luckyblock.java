@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import com.sun.imageio.plugins.common.SingleTileRenderedImage;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.*;
 import org.bukkit.Material;
@@ -23,6 +24,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
@@ -51,6 +53,7 @@ public final class Luckyblock extends JavaPlugin {
 
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
+    FileConfiguration fc=getConfig();
     public class BlockBreak implements Listener {
         //ブロック破壊されたとき
         @EventHandler
@@ -172,6 +175,17 @@ public final class Luckyblock extends JavaPlugin {
                             location.setY(location.getY() + 1);
                             location.add(e.getPlayer().getVelocity());
                             living.teleport(location);
+                        }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lHeadStick")&&e.getItem().getType()==Material.STICK){
+                            if(e.getPlayer().getInventory().getHelmet()==null){
+                                if(e.getPlayer().getInventory().getItemInOffHand().getType()!=Material.AIR) {
+                                    e.getPlayer().getInventory().setHelmet(e.getPlayer().getInventory().getItemInOffHand());
+                                    e.getPlayer().getInventory().getItemInOffHand().setAmount(e.getPlayer().getInventory().getItemInOffHand().getAmount() - 1);
+                                }else{
+                                    e.getPlayer().sendMessage("オフハンドにアイテムを置いてください");
+                                }
+                            }else{
+                                e.getPlayer().sendMessage("頭にかぶっているものを外してください");
+                            }
                         }
                     }
                 }
@@ -285,6 +299,24 @@ public final class Luckyblock extends JavaPlugin {
                 }
             }
         }
+        @EventHandler
+        public void CloseGUIEvent(InventoryCloseEvent e){
+            if(e.getView().getTitle().matches("§lAdd Lucky Item:.*")){
+                ArrayList<ItemStack> list=new ArrayList<>();
+                for(int j=0;j<27;j++) {
+                    if (e.getView().getItem(j) != null) {
+                        list.add(e.getView().getItem(j));
+                    }
+                }
+                fc.set(e.getView().getTitle().replaceFirst("§lAdd Lucky Item:",""),list);
+                i.add(b->{
+                   for(ItemStack item:list){
+                       b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+                   }
+                });
+                e.getPlayer().sendMessage("追加に成功しました");
+            }
+        }
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -293,35 +325,81 @@ public final class Luckyblock extends JavaPlugin {
                 Player p = (Player) sender;
                 p.getInventory().addItem(createskull(Integer.parseInt(args[0])));
             }else{
-                System.out.println("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
         } else if (cmd.getName().equalsIgnoreCase("lbgive")) {
             Player p = getPlayer(args[0]);
             p.getWorld().dropItem(p.getLocation(), createskull(Integer.parseInt(args[1])));
         }else if (cmd.getName().equalsIgnoreCase("lbdo")) {
             if(sender instanceof Player) {
-                if (Integer.parseInt(args[0]) < i.size() && Integer.parseInt(args[0]) >= 0) {
-                    Player p = (Player) sender;
-                    (i.get(Integer.parseInt(args[0]))).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
-                } else {
-                    sender.sendMessage("指定された数がおかしいです。最大値:" + (i.size() - 1));
+                if(args[0].matches("[0-9]*")){
+                    if (Integer.parseInt(args[0]) <=i.size()&&0<Integer.parseInt(args[0])) {
+                        Player p = (Player) sender;
+                        (i.get(Integer.parseInt(args[0])-1)).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
+                    } else {
+                        sender.sendMessage("指定された数がおかしいです。最大値:" + i.size());
+                    }
+                }else{
+                    if(fc.contains(args[0])){
+                        if(sender instanceof Player) {
+                            BlockBreakEvent event = new BlockBreakEvent(((Player)sender).getLocation().getBlock(), (Player)sender);
+                            for (ItemStack item : (ArrayList<ItemStack>) fc.get(args[0])) {
+                                event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), item);
+                            }
+                        }else{
+                            sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                        }
+                    }else{
+                        sender.sendMessage("指定された文字が不正です");
+                    }
                 }
             }else{
-                System.out.println("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+            }
+        }else if(cmd.getName().equalsIgnoreCase("lbadd")){
+            if(!fc.contains(args[0])) {
+                if (sender instanceof Player) {
+                    Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
+                    ((Player) sender).openInventory(inv);
+                } else {
+                    sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                }
+            }else{
+                sender.sendMessage("すでに同じ名前のものがあります");
+            }
+        }else if(cmd.getName().equalsIgnoreCase("lbremove")){
+            if(fc.contains(args[0])){
+                fc.set(args[0],null);
+                sender.sendMessage("削除しました");
+            }else{
+                sender.sendMessage("キーが見つかりませんでした");
+            }
+        }else if(cmd.getName().equalsIgnoreCase("lbgetlist")){
+            sender.sendMessage("要素数:"+fc.getKeys(false).size());
+            for(String key:fc.getKeys(false)){
+                sender.sendMessage(key);
+            }
+        }else if(cmd.getName().equalsIgnoreCase("lbreload")){
+            if(sender.isOp()){
+                sender.sendMessage("リロード中...");
+                i.clear();
+                onDisable();
+                onEnable();
+                sender.sendMessage("リロードが終了しました");
+            }else{
+                sender.sendMessage("権限がありません");
             }
         }
         return false;
     }
-
     @Override
     public void onEnable() {
         if(!getDataFolder().exists()){
             new File(String.valueOf(getDataFolder().toPath())).mkdir();
         }
-        File f=new File(String.valueOf(getDataFolder()));
-        File[] files=f.listFiles();       //牛召喚
+        File[] files=getDataFolder().listFiles();       //牛召喚
         for(int j=0;j< files.length;j++){
-            if(files[j].isFile()&&!(files[j].getName()).equals("magma.nbt")){
+            if(files[j].isFile()&&!(files[j].getName()).equals("magma.nbt")&&files[j].getName().matches(".*\\.nbt")){
                 int finalJ = j;
                 i.add(b->{try {
                     Structure.placeStructure(files[finalJ], b.getBlock().getLocation(), false, false);
@@ -329,6 +407,13 @@ public final class Luckyblock extends JavaPlugin {
                     broadcastMessage(e.toString());
                 }});
             }
+        }
+        for(String key:fc.getKeys(false)){
+            i.add(b->{
+               for(ItemStack item:(ArrayList<ItemStack>)fc.get(key)) {
+                   b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+               }
+            });
         }
         //code by lenlino
         i.add(b->getWorld(b.getBlock().getWorld().getName()).spawnEntity(b.getBlock().getLocation(), EntityType.COW));
@@ -706,11 +791,28 @@ public final class Luckyblock extends JavaPlugin {
             entity1.getEquipment().setItemInMainHand(item);
             entity1.setAI(true);
         });
+        i.add(b->{
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.ORANGE_TULIP,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.OXEYE_DAISY,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.WITHER_ROSE,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.CHORUS_FLOWER,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.ROSE_BUSH,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.SUNFLOWER,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.BLUE_ORCHID,10));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.ALLIUM,10));
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.STICK);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§e§lHeadStick");
+           item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
     }
-
     @Override
     public void onDisable() {
+        saveConfig();
         // Plugin shutdown logic
     }
     public ItemStack createskull(Integer index) {
