@@ -392,6 +392,7 @@ public final class Luckyblock extends JavaPlugin {
         }
         return false;
     }
+
     @Override
     public void onEnable() {
         if(!getDataFolder().exists()){
