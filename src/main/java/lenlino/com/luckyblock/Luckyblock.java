@@ -410,9 +410,13 @@ public final class Luckyblock extends JavaPlugin {
         }
         for(String key:fc.getKeys(false)){
             i.add(b->{
-               for(ItemStack item:(ArrayList<ItemStack>)fc.get(key)) {
-                   b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-               }
+                if(fc.contains(key)) {
+                    for (ItemStack item : (ArrayList<ItemStack>) fc.get(key)) {
+                        b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+                    }
+                }else{
+                    i.get((new Random()).nextInt(i.size())).onigiri(b);
+                }
             });
         }
         //code by lenlino
