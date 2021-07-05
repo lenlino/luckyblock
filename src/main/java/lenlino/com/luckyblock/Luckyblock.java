@@ -64,12 +64,24 @@ public final class Luckyblock extends JavaPlugin {
                 i.get((new Random()).nextInt(i.size())).onigiri(b);
                 b.getBlock().getWorld().spawnParticle(Particle.EXPLOSION_LARGE,b.getBlock().getLocation(),1);
                 b.getBlock().getWorld().playSound(b.getPlayer().getLocation(),Sound.ENTITY_SPLASH_POTION_BREAK,100,1);
+            }else if(b.getBlock().hasMetadata("luckySponge")){
+                ItemStack item=new ItemStack(Material.SPONGE);
+                ItemMeta meta=item.getItemMeta();
+                meta.setDisplayName("§e§lSPONGE");
+                item.setItemMeta(meta);
+                b.setDropItems(false);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+                b.getBlock().removeMetadata("luckySponge",plugin);
             }
         }
         @EventHandler
         public void placeblock(BlockPlaceEvent b) {
-            if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
-                b.getBlock().setMetadata("lucky", new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
+            if(b.getItemInHand().getItemMeta()!=null) {
+                if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
+                    b.getBlock().setMetadata("lucky", new FixedMetadataValue(plugin, b.getBlock().getLocation().clone()));
+                } else if (b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
+                    b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(plugin, b.getBlock().getLocation().clone()));
+                }
             }
         }
         @EventHandler
@@ -811,6 +823,13 @@ public final class Luckyblock extends JavaPlugin {
            ItemMeta meta=item.getItemMeta();
            meta.setDisplayName("§e§lHeadStick");
            item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.SPONGE);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§e§lSPONGE");
+            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new BlockBreak(), this);
