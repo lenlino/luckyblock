@@ -19,10 +19,7 @@ import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -83,6 +80,26 @@ public final class Luckyblock extends JavaPlugin {
                     b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(plugin, b.getBlock().getLocation().clone()));
                 }
             }
+        }
+        @EventHandler
+        public void MoveByPistonEvent(BlockPistonExtendEvent e){
+            if(hasBlockMeta(e.getBlocks(),"luckySponge","lucky")){
+                e.setCancelled(true);
+            }
+        }
+        @EventHandler
+        public void MoveByPistonEvent(BlockPistonRetractEvent e){
+            if(hasBlockMeta(e.getBlocks(),"luckySponge","lucky")){
+                e.setCancelled(true);
+            }
+        }
+        private boolean hasBlockMeta(List<Block> blockList,String metadataKey,String key){
+            for(Block b:blockList){
+                if(b.hasMetadata(metadataKey)||b.hasMetadata(key)){
+                    return true;
+                }
+            }
+            return false;
         }
         @EventHandler
         public void PlayerEntityShootBowEvent(EntityShootBowEvent e){
