@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -33,6 +35,8 @@ public final class Luckyblock extends JavaPlugin {
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
     FileConfiguration fc=getConfig();
+    Random random=new Random();
+    Color[] colors={Color.AQUA,Color.BLACK,Color.BLUE,Color.ORANGE, Color.FUCHSIA, Color.GREEN, Color.GRAY, Color.LIME, Color.MAROON, Color.OLIVE, Color.NAVY, Color.PURPLE, Color.RED, Color.SILVER, Color.TEAL, Color.YELLOW, Color.WHITE};
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("lbget")) {
@@ -542,6 +546,51 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),createskull(3));
+        });
+        i.add(b->{
+            FireworkEffect.Type[] types={FireworkEffect.Type.STAR, FireworkEffect.Type.BURST, FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.CREEPER};
+           for(int i=0;i<20;i++){
+               Location location=b.getBlock().getLocation();
+               location.setX(location.getX()-2+random.nextInt(5));
+               location.setZ(location.getZ()-2+random.nextInt(5));
+               Firework firework=(Firework)b.getBlock().getWorld().spawnEntity(location,EntityType.FIREWORK);
+               FireworkMeta meta= firework.getFireworkMeta();
+               meta.setPower(2);
+               meta.addEffect(FireworkEffect.builder().withColor(Color.fromRGB(random.nextInt(255),random.nextInt(255),random.nextInt(255))).with(types[random.nextInt(types.length)]).build());
+               firework.setFireworkMeta(meta);
+           }
+        });
+        i.add(b->{
+           Location location=b.getPlayer().getLocation();
+           location.setY(location.getY()-1);
+           location.setX(location.getX()-1);
+           location.setZ(location.getZ()-1);
+           for(int i=0;i<3;i++){
+               for(int j=0;j<3;j++){
+                   for(int k=0;k<4;k++){
+                       if((k==1||k==2)&&i==1&&j==1) {
+                           b.getPlayer().getWorld().getBlockAt(location).setType(Material.WATER);
+                       }else{
+                           b.getPlayer().getWorld().getBlockAt(location).setType(Material.OBSIDIAN);
+                       }
+                       location.setY(location.getY()+1);
+                   }
+                   location.setY(location.getY()-4);
+                   location.setX(location.getX()+1);
+               }
+               location.setX(location.getX()-3);
+               location.setZ(location.getZ()+1);
+           }
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.APPLE);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§e§lBigApple");
+           item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
     }
     @Override
@@ -558,9 +607,7 @@ public final class Luckyblock extends JavaPlugin {
 
         return skull;
     }
-
     public void ItemDrop(Material i,Integer a,BlockBreakEvent e) {
-        ItemStack item = new ItemStack(i,a);
-        e.getBlock().getWorld().dropItem(e.getBlock().getLocation(), item);
+        e.getBlock().getWorld().dropItem(e.getBlock().getLocation(),new ItemStack(i,a));
     }
 }

@@ -1,7 +1,9 @@
 package lenlino.com.luckyblock;
 
+import net.minecraft.server.v1_16_R3.Items;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -12,6 +14,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Wood;
+import org.bukkit.material.Wool;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -63,16 +67,17 @@ public class LuckyBlockEvent implements Listener {
             Material.WHITE_SHULKER_BOX,
             Material.YELLOW_SHULKER_BOX
     };
+    Random random=new Random();
+    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
     }
-    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
     @EventHandler
     public void breakblock(BlockBreakEvent b) {
         if(b.getBlock().hasMetadata("lucky")){
             b.getBlock().setType(Material.AIR);
             b.getBlock().removeMetadata("lucky",this.luckyblock.plugin);
-            this.luckyblock.i.get((new Random()).nextInt(this.luckyblock.i.size())).onigiri(b);
+            this.luckyblock.i.get(random.nextInt(this.luckyblock.i.size())).onigiri(b);
             b.getBlock().getWorld().spawnParticle(Particle.EXPLOSION_LARGE,b.getBlock().getLocation(),1);
             b.getBlock().getWorld().playSound(b.getPlayer().getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK,100,1);
         }else if(b.getBlock().hasMetadata("luckySponge")){
@@ -98,12 +103,12 @@ public class LuckyBlockEvent implements Listener {
                             return;
                         }
                     }
-                    BreakBlocks(b.getBlock(), BigPicMode.get(b.getPlayer().getName()));
+                    BreakBlocks(b.getBlock(),b.getPlayer().getInventory().getItemInMainHand(),BigPicMode.get(b.getPlayer().getName()));
                 }
             }
         }
     }
-    public void BreakBlocks(Block block,BreakMode mode){
+    public void BreakBlocks(Block block,ItemStack tool,BreakMode mode){
         Location l=block.getLocation();
         int number=3;
         if(mode==BreakMode.FIVE){
@@ -117,7 +122,7 @@ public class LuckyBlockEvent implements Listener {
                 for(int k=0;k<number;k++){//Z
                     if(IsRightBlock(block.getWorld().getBlockAt(l))){
                         if(!block.getWorld().getBlockAt(l).hasMetadata("lucky")&&!block.hasMetadata("luckySponge")){
-                            for(ItemStack itemStack:block.getWorld().getBlockAt(l).getDrops()) {
+                            for(ItemStack itemStack:block.getWorld().getBlockAt(l).getDrops(tool)) {
                                 block.getWorld().dropItem(block.getWorld().getBlockAt(l).getLocation(),itemStack);
                             }
                         }
@@ -327,18 +332,14 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void EatBreadEvent(PlayerItemConsumeEvent e){
-        ItemStack item = new ItemStack(Material.BREAD);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lis=new ArrayList<String>();
-        lis.add("koufuが作ったパン");
-        lis.add("水が欲しくなる");
-        lis.add("create by koufu");
-        meta.setDisplayName("§a§lkoufuのパン");
-        meta.addEnchant(Enchantment.DURABILITY,1,true);
-        meta.setLore(lis);
-        item.setItemMeta(meta);
-        if(e.getItem().isSimilar(item)){
-            this.luckyblock.i.get(10).onigiri(new BlockBreakEvent(e.getPlayer().getLocation().getBlock(),e.getPlayer()));
+        if(e.getItem().getItemMeta()!=null) {
+            if(e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")){
+                e.setCancelled(true);
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lBigApple")){
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST,1200,3));
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,1200,3));
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,1200,3));
+            }
         }
     }
     @EventHandler
