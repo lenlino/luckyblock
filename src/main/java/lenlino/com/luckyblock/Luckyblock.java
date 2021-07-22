@@ -78,12 +78,8 @@ public final class Luckyblock extends JavaPlugin {
         }else if(cmd.getName().equalsIgnoreCase("lbadd")){
             if(!fc.contains(args[0])) {
                 if (sender instanceof Player) {
-                    if(args[0].matches("[0-9]*")){
-                        sender.sendMessage("不正な因数です");
-                    }else {
-                        Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
-                        ((Player) sender).openInventory(inv);
-                    }
+                    Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
+                    ((Player) sender).openInventory(inv);
                 } else {
                     sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
                 }
@@ -450,6 +446,13 @@ public final class Luckyblock extends JavaPlugin {
             b.getPlayer().addPotionEffect(p);
             b.getPlayer().addPotionEffect(p2);
         });
+        i.add(b -> {
+            ItemStack i = new ItemStack(Material.EGG);
+            ItemMeta meta = i.getItemMeta();
+            meta.setDisplayName("§c§lhand grenade");
+            i.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),i);
+        });
 
 
         //code by koufu193
@@ -544,15 +547,11 @@ public final class Luckyblock extends JavaPlugin {
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-            if(random.nextInt(10000)==335) {
-                ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName("§e§lBigPickaxe");
-                item.setItemMeta(meta);
-                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
-            }else{
-                i.get(random.nextInt(i.size())).onigiri(b);
-            }
+            ItemStack item=new ItemStack(Material.DIAMOND_PICKAXE);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§e§lBigPickaxe");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),createskull(3));
@@ -598,11 +597,6 @@ public final class Luckyblock extends JavaPlugin {
            meta.setDisplayName("§e§lBigApple");
            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b->{
-           for(int i=0;i<3;i++){
-               ((Rabbit)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.RABBIT)).setRabbitType(Rabbit.Type.THE_KILLER_BUNNY);
-           }
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
     }

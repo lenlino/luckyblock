@@ -435,4 +435,13 @@ public class LuckyBlockEvent implements Listener {
             e.getPlayer().sendMessage("追加に成功しました");
         }
     }
+    @EventHandler
+    public void PlayerEggThrowEvent(PlayerEggThrowEvent e) {
+        if(e.getEgg().getItem().getItemMeta()!=null) {
+            if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§c§lhand grenade")) {
+                e.getEgg().getWorld().spawnEntity(e.getEgg().getLocation(), EntityType.PRIMED_TNT);
+                e.getEgg().remove();
+            }
+        }
+    }
 }
