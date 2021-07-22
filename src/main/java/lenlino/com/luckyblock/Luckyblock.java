@@ -78,8 +78,12 @@ public final class Luckyblock extends JavaPlugin {
         }else if(cmd.getName().equalsIgnoreCase("lbadd")){
             if(!fc.contains(args[0])) {
                 if (sender instanceof Player) {
-                    Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
-                    ((Player) sender).openInventory(inv);
+                    if(args[0].matches("[0-9]*")){
+                        sender.sendMessage("不正な因数です");
+                    }else {
+                        Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
+                        ((Player) sender).openInventory(inv);
+                    }
                 } else {
                     sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
                 }
@@ -540,11 +544,15 @@ public final class Luckyblock extends JavaPlugin {
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-            ItemStack item=new ItemStack(Material.DIAMOND_PICKAXE);
-            ItemMeta meta=item.getItemMeta();
-            meta.setDisplayName("§e§lBigPickaxe");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+            if(random.nextInt(10000)==335) {
+                ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName("§e§lBigPickaxe");
+                item.setItemMeta(meta);
+                b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
+            }else{
+                i.get(random.nextInt(i.size())).onigiri(b);
+            }
         });
         i.add(b->{
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),createskull(3));
