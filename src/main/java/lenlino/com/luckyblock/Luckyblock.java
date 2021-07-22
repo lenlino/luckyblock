@@ -599,6 +599,11 @@ public final class Luckyblock extends JavaPlugin {
            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+           for(int i=0;i<3;i++){
+               ((Rabbit)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.RABBIT)).setRabbitType(Rabbit.Type.THE_KILLER_BUNNY);
+           }
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
     }
     @Override
