@@ -441,6 +441,19 @@ public class LuckyBlockEvent implements Listener {
             if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§c§lhand grenade")) {
                 e.getEgg().getWorld().spawnEntity(e.getEgg().getLocation(), EntityType.PRIMED_TNT);
                 e.getEgg().remove();
+            }else if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§c§lFang Egg")){
+                Location location=e.getEgg().getLocation();
+                location.setX(location.getX()-2);
+                location.setZ(location.getZ()-2);
+                for(int j=0;j<5;j++){
+                    for(int k=0;k<5;k++){
+                        e.getEgg().getWorld().spawnEntity(location,EntityType.EVOKER_FANGS);
+                        location.setZ(location.getZ()+1);
+                    }
+                    location.setX(location.getX()+1);
+                    location.setZ(location.getZ()-5);
+                }
+                e.getEgg().remove();
             }
         }
     }

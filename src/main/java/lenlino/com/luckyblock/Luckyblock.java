@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.TNT;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -596,6 +597,26 @@ public final class Luckyblock extends JavaPlugin {
            ItemMeta meta=item.getItemMeta();
            meta.setDisplayName("§e§lBigApple");
            item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            TNTPrimed tnt=(TNTPrimed)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PRIMED_TNT);
+            tnt.setYield(tnt.getYield()*2);
+        });
+        i.add(b->{
+            Location location=b.getPlayer().getLocation();
+           for(int j=-2;j<3;j++){
+               for(int k=-2;k<3;k++){
+                   b.getPlayer().getWorld().getBlockAt((int)location.getX()+j,(int)location.getY(),(int)location.getZ()+k).setType(Material.LAVA);
+               }
+           }
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.EGG);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§c§lFang Egg");
+           item.setItemMeta(meta);
+           item.setAmount(8);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
