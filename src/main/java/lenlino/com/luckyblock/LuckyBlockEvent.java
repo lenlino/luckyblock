@@ -7,6 +7,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -343,7 +344,7 @@ public class LuckyBlockEvent implements Listener {
             }
         }
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void WaterEvent(PlayerBucketEmptyEvent e){
         e.setCancelled(true);
         if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")){
@@ -352,7 +353,7 @@ public class LuckyBlockEvent implements Listener {
             e.setCancelled(false);
         }
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void BucketEvent(PlayerBucketFillEvent e){
         e.setCancelled(true);
         if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")){
