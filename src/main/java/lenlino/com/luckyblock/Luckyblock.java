@@ -79,8 +79,12 @@ public final class Luckyblock extends JavaPlugin {
         }else if(cmd.getName().equalsIgnoreCase("lbadd")){
             if(!fc.contains(args[0])) {
                 if (sender instanceof Player) {
-                    Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
-                    ((Player) sender).openInventory(inv);
+                    if(!args[0].matches("[0-9]*")) {
+                        Inventory inv = Bukkit.createInventory(null, 27, "§lAdd Lucky Item:" + args[0]);
+                        ((Player) sender).openInventory(inv);
+                    }else{
+                        sender.sendMessage("名前が、数字だけです");
+                    }
                 } else {
                     sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
                 }
