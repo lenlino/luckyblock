@@ -623,6 +623,24 @@ public final class Luckyblock extends JavaPlugin {
            item.setAmount(8);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.SADDLE,2));
+        });
+        i.add(b->{
+           for(int i=0;i<5;i++){
+               b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.SNOWMAN);
+           }
+        });
+        i.add(b->{
+            for(int i=0;i<5;i++){
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.IRON_GOLEM);
+            }
+        });
+        i.add(b->{
+            for(int i=0;i<5;i++){
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.CAT);
+            }
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
     }
     @Override
