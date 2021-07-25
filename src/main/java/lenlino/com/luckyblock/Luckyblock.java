@@ -24,8 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.File;
-import  java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import static org.bukkit.Bukkit.*;
@@ -54,8 +53,12 @@ public final class Luckyblock extends JavaPlugin {
             if(sender instanceof Player) {
                 if(args[0].matches("[0-9]*")){
                     if (Integer.parseInt(args[0]) <=i.size()&&0<Integer.parseInt(args[0])) {
-                        Player p = (Player) sender;
-                        (i.get(Integer.parseInt(args[0])-1)).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
+                        if(args.length==1) {
+                            Player p = (Player) sender;
+                            i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
+                        }else{
+                            i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(Bukkit.getPlayer(args[1]).getLocation().getBlock(), Bukkit.getPlayer(args[1])));
+                        }
                     } else {
                         sender.sendMessage("指定された数がおかしいです。最大値:" + i.size());
                     }
@@ -642,6 +645,76 @@ public final class Luckyblock extends JavaPlugin {
             }
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
+        /*
+        使うファイルはcommands.txt
+        ブロックを壊した人を指定するときは%player%を使う
+        実行したいコマンドを打つ(初めの/はいらない)
+        複数のコマンドを実行させたいときは{}を
+        {
+        give %player% sand 1
+        say %player% example
+        }
+        このように使う
+         */
+        File file=new File(getDataFolder().getPath()+"/commands.txt");
+        if(file.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String str;
+                int number = 0;
+                ArrayList<ArrayList<String>> commands = new ArrayList<>();
+                boolean IsData = false;
+                boolean IsFirst = false;
+                while ((str = br.readLine()) != null) {
+                    if (str.equals("{")) {
+                        if (IsData) {
+                            System.out.println("かっこが二重以上になっています");
+                            return;
+                        } else {
+                            IsData = true;
+                            IsFirst = true;
+                        }
+                        number++;
+                    } else if (str.equals("}")) {
+                        number--;
+                        IsData = false;
+                    } else {
+                        if (IsData) {
+                            if (IsFirst) {
+                                IsFirst = false;
+                                ArrayList<String> command = new ArrayList<>();
+                                command.add(str);
+                                commands.add(command);
+                            } else {
+                                commands.get(commands.size() - 1).add(str);
+                            }
+                        } else {
+                            ArrayList<String> command = new ArrayList<String>();
+                            command.add(str);
+                            commands.add(command);
+                        }
+                    }
+                }
+                if (number != 0) {
+                    System.out.println("luckyblock:command.txtのかっこがちゃんと閉じられていないです");
+                } else {
+                    for (ArrayList<String> command : commands) {
+                        i.add(b -> {
+                            for (String command1 : command) {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command1.replace("%player%", b.getPlayer().getName()));
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try{
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     @Override
     public void onDisable() {

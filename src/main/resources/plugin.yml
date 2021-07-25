@@ -10,7 +10,7 @@ commands:
     description: ラッキーブロック渡す
     permission: luckyblock.give
   lbdo:
-    description: ラッキーブロック内容実行
+    description: ラッキーブロック内容実行 ほかの人に実行させるなら/lbdo number playerNameにする
     permission: luckyblock.do
   lbadd:
     description: ドロップするアイテム追加
