@@ -23,10 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class LuckyBlockEvent implements Listener {
     Luckyblock luckyblock=null;
@@ -155,8 +152,12 @@ public class LuckyBlockEvent implements Listener {
         if(b.getItemInHand().getItemMeta()!=null) {
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
-            } else if (b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
-                b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
+            }else if(b.getItemInHand().getItemMeta()!=null){
+                if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
+                    b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
+                }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")){
+                    b.setCancelled(true);
+                }
             }
         }
     }
