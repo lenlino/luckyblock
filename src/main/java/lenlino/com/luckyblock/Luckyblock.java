@@ -644,6 +644,12 @@ public final class Luckyblock extends JavaPlugin {
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.CAT);
             }
         });
+        i.add(b->{
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),createskull(2));
+        });
+        i.add(b->{
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.NETHER_STAR));
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
