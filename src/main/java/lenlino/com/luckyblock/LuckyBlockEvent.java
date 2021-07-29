@@ -332,20 +332,36 @@ public class LuckyBlockEvent implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void WaterEvent(PlayerBucketEmptyEvent e){
         e.setCancelled(true);
-        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")){
-            e.getBlock().setType(Material.WATER);
-        }else{
-            e.setCancelled(false);
+        if(e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
+            if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
+                e.getBlock().setType(Material.WATER);
+                return;
+            }
         }
+        if(e.getPlayer().getInventory().getItemInOffHand().hasItemMeta()) {
+            if (e.getPlayer().getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
+                e.getBlock().setType(Material.WATER);
+                return;
+            }
+        }
+        e.setCancelled(false);
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void BucketEvent(PlayerBucketFillEvent e){
         e.setCancelled(true);
-        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")){
-            e.getBlock().setType(Material.AIR);
-        }else{
-            e.setCancelled(false);
+        if(e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
+            if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")) {
+                e.getBlock().setType(Material.AIR);
+                return;
+            }
         }
+        if(e.getPlayer().getInventory().getItemInOffHand().hasItemMeta()) {
+            if (e.getPlayer().getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")) {
+                e.getBlock().setType(Material.AIR);
+                return;
+            }
+        }
+        e.setCancelled(false);
     }
     @EventHandler
     public void TNTJoinEvent(PlayerJoinEvent e){

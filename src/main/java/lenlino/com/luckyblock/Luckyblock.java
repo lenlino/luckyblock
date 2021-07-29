@@ -667,13 +667,6 @@ public final class Luckyblock extends JavaPlugin {
            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
-        i.add(b->{
-            ItemStack item=new ItemStack(Material.ENDER_CHEST);
-            ItemMeta meta=item.getItemMeta();
-            meta.setDisplayName("§c§lEnder Chest");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
         i.add(b -> {
             ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
             ItemMeta meta = item.getItemMeta();
@@ -701,6 +694,9 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
             b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.LLAMA);
+        });
+        i.add(b->{
+           b.getBlock().setType(Material.GOLD_BLOCK);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
