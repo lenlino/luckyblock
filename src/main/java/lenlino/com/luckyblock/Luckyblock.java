@@ -50,34 +50,46 @@ public final class Luckyblock extends JavaPlugin {
             Player p = getPlayer(args[0]);
             p.getWorld().dropItem(p.getLocation(), createskull(Integer.parseInt(args[1])));
         }else if (cmd.getName().equalsIgnoreCase("lbdo")) {
-            if(sender instanceof Player) {
+            if(args.length==1) {
+                if (sender instanceof Player) {
+                        if (args[0].matches("[0-9]*")) {
+                            if (Integer.parseInt(args[0]) <= i.size() && 0 < Integer.parseInt(args[0])) {
+                                Player p = (Player) sender;
+                                i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
+                            } else {
+                                sender.sendMessage("指定された数がおかしいです。最大値:" + i.size());
+                            }
+                        } else {
+                            if (fc.contains(args[0])) {
+                                BlockBreakEvent event = new BlockBreakEvent(((Player) sender).getLocation().getBlock(), (Player) sender);
+                                for (ItemStack item : (ArrayList<ItemStack>) fc.get(args[0])) {
+                                    event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), item);
+                                }
+                            } else {
+                                sender.sendMessage("指定された文字が不正です");
+                            }
+                    }
+                } else {
+                    sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                }
+            }else{
                 if(args[0].matches("[0-9]*")){
-                    if (Integer.parseInt(args[0]) <=i.size()&&0<Integer.parseInt(args[0])) {
-                        if(args.length==1) {
-                            Player p = (Player) sender;
-                            i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
-                        }else{
-                            i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(Bukkit.getPlayer(args[1]).getLocation().getBlock(), Bukkit.getPlayer(args[1])));
-                        }
+                    if (Integer.parseInt(args[0]) <= i.size() && 0 < Integer.parseInt(args[0])) {
+                        Player p=Bukkit.getPlayer(args[1]);
+                        i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
                     } else {
                         sender.sendMessage("指定された数がおかしいです。最大値:" + i.size());
                     }
                 }else{
-                    if(fc.contains(args[0])){
-                        if(sender instanceof Player) {
-                            BlockBreakEvent event = new BlockBreakEvent(((Player)sender).getLocation().getBlock(), (Player)sender);
-                            for (ItemStack item : (ArrayList<ItemStack>) fc.get(args[0])) {
-                                event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), item);
-                            }
-                        }else{
-                            sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
+                    if (fc.contains(args[0])) {
+                        BlockBreakEvent event = new BlockBreakEvent(Bukkit.getPlayer(args[1]).getLocation().getBlock(), Bukkit.getPlayer(args[1]));
+                        for (ItemStack item : (ArrayList<ItemStack>) fc.get(args[0])) {
+                            event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), item);
                         }
-                    }else{
+                    } else {
                         sender.sendMessage("指定された文字が不正です");
                     }
                 }
-            }else{
-                sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
         }else if(cmd.getName().equalsIgnoreCase("lbadd")){
             if(!fc.contains(args[0])) {
@@ -649,6 +661,13 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.NETHER_STAR));
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.ENDER_CHEST);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§c§lEnder Chest");
+           item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*

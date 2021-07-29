@@ -155,7 +155,7 @@ public class LuckyBlockEvent implements Listener {
             }else if(b.getItemInHand().getItemMeta()!=null){
                 if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
                     b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
-                }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")){
+                }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")||b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
                     b.setCancelled(true);
                 }
             }
@@ -311,6 +311,8 @@ public class LuckyBlockEvent implements Listener {
                                 break;
                         }
                         e.getPlayer().sendMessage("つるはしのモードを§e§l"+BigPicMode.get(e.getPlayer().getName()).toString()+ ChatColor.RESET+"に変更しました");
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
+                        e.getPlayer().openInventory(e.getPlayer().getEnderChest());
                     }
                 }
             }
