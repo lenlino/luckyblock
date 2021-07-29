@@ -1,8 +1,8 @@
 package lenlino.com.luckyblock;
 
-import net.minecraft.server.v1_16_R3.Items;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -15,12 +15,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Wood;
-import org.bukkit.material.Wool;
+import org.bukkit.material.Directional;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import java.util.*;
@@ -48,24 +46,8 @@ public class LuckyBlockEvent implements Listener {
             Material.BEACON,
             Material.FURNACE,
             Material.ENCHANTING_TABLE,
-            Material.SHULKER_BOX,
-            Material.PINK_SHULKER_BOX,
-            Material.MAGENTA_SHULKER_BOX,
-            Material.LIME_SHULKER_BOX,
-            Material.LIGHT_GRAY_SHULKER_BOX,
-            Material.LIGHT_BLUE_SHULKER_BOX,
-            Material.GREEN_SHULKER_BOX,
-            Material.CYAN_SHULKER_BOX,
-            Material.BROWN_SHULKER_BOX,
-            Material.BLUE_SHULKER_BOX,
-            Material.BLACK_SHULKER_BOX,
-            Material.GRAY_SHULKER_BOX,
-            Material.ORANGE_SHULKER_BOX,
-            Material.PURPLE_SHULKER_BOX,
-            Material.RED_SHULKER_BOX,
-            Material.WHITE_SHULKER_BOX,
-            Material.YELLOW_SHULKER_BOX
     };
+    BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
     Random random=new Random();
     HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
     public LuckyBlockEvent(Luckyblock luckyblock){
@@ -417,6 +399,9 @@ public class LuckyBlockEvent implements Listener {
                 } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§7§lBone of life") && e.getEntityType().equals(EntityType.ZOMBIE_VILLAGER)) {
                     e.getEntity().getWorld().spawnEntity(e.getEntity().getLocation(),EntityType.VILLAGER);
                     e.getEntity().remove();
+                } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cEmeraldSword")) {
+                    ItemStack item = new ItemStack(Material.EMERALD,1);
+                    e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
                 }
             }
         }

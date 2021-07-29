@@ -4,8 +4,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.type.TNT;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,7 +30,6 @@ import static org.bukkit.Bukkit.*;
 
 
 public final class Luckyblock extends JavaPlugin {
-
     Plugin plugin=this;
     ArrayList<risuto> i=new ArrayList<risuto>();
     FileConfiguration fc=getConfig();
@@ -668,6 +666,41 @@ public final class Luckyblock extends JavaPlugin {
            meta.setDisplayName("§c§lEnder Chest");
            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.ENDER_CHEST);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c§lEnder Chest");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cEmeraldSword");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.TOTEM_OF_UNDYING,2,b);
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int nu=0;nu<3;nu++){
+                        location.getBlock().setType(Material.REDSTONE_BLOCK);
+                        location.setY(location.getY()+1);
+                    }
+                    location.setY(location.getY()-3);
+                    location.setX(location.getX()+1);
+                }
+                location.setX(location.getX()-3);
+                location.setZ(location.getZ()+1);
+            }
+        });
+        i.add(b->{
+            b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.LLAMA);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
