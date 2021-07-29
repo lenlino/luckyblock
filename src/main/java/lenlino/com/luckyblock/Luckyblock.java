@@ -252,7 +252,7 @@ public final class Luckyblock extends JavaPlugin {
             ItemStack item = new ItemStack(Material.LEATHER_BOOTS);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§lSuperSpeedBoots");
-            AttributeModifier m = new AttributeModifier(UUID.randomUUID(),"speed", 10, AttributeModifier.Operation.ADD_NUMBER,EquipmentSlot.FEET);
+            AttributeModifier m = new AttributeModifier(UUID.randomUUID(),"speed", 3, AttributeModifier.Operation.ADD_NUMBER,EquipmentSlot.FEET);
             meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED,m);
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
