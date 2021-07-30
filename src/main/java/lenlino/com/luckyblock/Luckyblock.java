@@ -47,28 +47,28 @@ public final class Luckyblock extends JavaPlugin {
                 sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
             }
         } else if (cmd.getName().equalsIgnoreCase("lbgive")) {
-            Player p = getPlayer(args[0]);
+            Player p = Bukkit.getPlayer(args[0]);
             p.getWorld().dropItem(p.getLocation(), createskull(Integer.parseInt(args[1])));
         }else if (cmd.getName().equalsIgnoreCase("lbdo")) {
             if(args.length==1) {
                 if (sender instanceof Player) {
+                    Player p = (Player) sender;
                         if (args[0].matches("[0-9]*")) {
                             if (Integer.parseInt(args[0]) <= i.size() && 0 < Integer.parseInt(args[0])) {
-                                Player p = (Player) sender;
                                 i.get(Integer.parseInt(args[0]) - 1).onigiri(new BlockBreakEvent(p.getLocation().getBlock(), p));
                             } else {
                                 sender.sendMessage("指定された数がおかしいです。最大値:" + i.size());
                             }
                         } else {
                             if (fc.contains(args[0])) {
-                                BlockBreakEvent event = new BlockBreakEvent(((Player) sender).getLocation().getBlock(), (Player) sender);
+                                BlockBreakEvent event = new BlockBreakEvent(p.getLocation().getBlock(), p);
                                 for (ItemStack item : (ArrayList<ItemStack>) fc.get(args[0])) {
                                     event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), item);
                                 }
                             } else {
                                 sender.sendMessage("指定された文字が不正です");
                             }
-                    }
+                        }
                 } else {
                     sender.sendMessage("コンソール側からやコマンドブロックからこのコマンドを実行しないでください");
                 }
@@ -574,7 +574,7 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),createskull(3));
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.SNOWBALL,16));
         });
         i.add(b->{
             FireworkEffect.Type[] types={FireworkEffect.Type.STAR, FireworkEffect.Type.BURST, FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.CREEPER};
@@ -719,8 +719,8 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
             ItemStack item=new ItemStack(Material.DIAMOND_SWORD);
-            item.addEnchantment(Enchantment.DAMAGE_ALL,10);
-            item.addEnchantment(Enchantment.KNOCKBACK,5);
+            item.addUnsafeEnchantment(Enchantment.DAMAGE_ALL,10);
+            item.addUnsafeEnchantment(Enchantment.KNOCKBACK,5);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{

@@ -281,7 +281,7 @@ public class LuckyBlockEvent implements Listener {
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lBigPickaxe")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
                         if(!e.getPlayer().isSneaking()) {
                             if(names.contains(e.getPlayer().getName())){
-                                e.getPlayer().sendMessage("ロックを解除してください(スニーク+右クリック");
+                                e.getPlayer().sendMessage("ロックを解除してください(スニーク+右クリック)");
                             }else {
                                 if (!BigPicMode.containsKey(e.getPlayer().getName())) {
                                     BigPicMode.put(e.getPlayer().getName(), BreakMode.TREE);
