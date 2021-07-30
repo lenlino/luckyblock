@@ -726,6 +726,27 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.ARROW,16));
         });
+        i.add(b->{
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.BEACON,2));
+        });
+        i.add(b->{
+           for(int j=0;j<10;j++){
+               for(int k=0;k<10;k++){
+                   b.getBlock().getWorld().getBlockAt(b.getBlock().getX()+j,b.getBlock().getY(),b.getBlock().getZ()+k).setType(Material.GOLD_BLOCK);
+               }
+           }
+        });
+        i.add(b -> {
+            ItemStack item = new ItemStack(Material.FIREWORK_ROCKET,5);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cRocket?");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.PRISMARINE,64,b);
+            ItemDrop(Material.CONDUIT,1,b);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
