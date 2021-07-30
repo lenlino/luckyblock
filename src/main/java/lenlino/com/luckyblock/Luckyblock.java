@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -696,7 +698,30 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.LLAMA);
         });
         i.add(b->{
-           b.getBlock().setType(Material.GOLD_BLOCK);
+            Location location=b.getBlock().getLocation();
+            location.setY(location.getY()+10);
+           FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.DIAMOND_BLOCK));
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            location.setY(location.getY()+10);
+            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.GOLD_BLOCK));
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            location.setY(location.getY()+10);
+            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.EMERALD_BLOCK));
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            location.setY(location.getY()+10);
+            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.IRON_BLOCK));
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.DIAMOND_SWORD);
+            item.addEnchantment(Enchantment.DAMAGE_ALL,10);
+            item.addEnchantment(Enchantment.KNOCKBACK,5);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
