@@ -13,7 +13,9 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Directional;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -135,12 +137,18 @@ public class LuckyBlockEvent implements Listener {
         if(b.getItemInHand().getItemMeta()!=null) {
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
-            }else if(b.getItemInHand().getItemMeta()!=null){
-                if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
-                    b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
-                }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")||b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
-                    b.setCancelled(true);
+            }else if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
+                b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")||b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
+                b.setCancelled(true);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c金床")){
+                b.setCancelled(true);
+                Inventory inv=Bukkit.createInventory(null,9,"§c金床");
+                ItemStack item=new ItemStack(Material.GLASS_PANE);
+                for(int i=2;i<9;i++){
+                    inv.setItem(i,item);
                 }
+                b.getPlayer().openInventory(inv);
             }
         }
     }
@@ -310,6 +318,51 @@ public class LuckyBlockEvent implements Listener {
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
                         e.getPlayer().openInventory(e.getPlayer().getEnderChest());
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cRocket?")&&e.getAction()==Action.RIGHT_CLICK_BLOCK) {
+                        e.setCancelled(true);
+                        List<Entity> entities = e.getPlayer().getNearbyEntities(2.5, 2.5, 2.5);
+                        Location location = e.getClickedBlock().getLocation();
+                        location.setY(location.getY()+2);
+                        if (entities.size() != 0) {
+                            Firework entity = (Firework)e.getPlayer().getWorld().spawnEntity(location, EntityType.FIREWORK);
+                            FireworkMeta meta=entity.getFireworkMeta();
+                            meta.setPower(2);
+                            meta.addEffect(FireworkEffect.builder().withColor(Color.RED).build());
+                            entity.setFireworkMeta(meta);
+                            e.getItem().setAmount(e.getItem().getAmount() - 1);
+                            if (entities.size() == 1) {
+                                entity.addPassenger(entities.get(0));
+                            } else {
+                                entity.addPassenger(entities.get(0));
+                                entity.addPassenger(entities.get(1));
+                            }
+                        }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cMagmaSponge")&&e.getAction()==Action.RIGHT_CLICK_BLOCK){
+                        e.setCancelled(true);
+                        for(int i=-3;i<4;i++){
+                            for(int j=-3;j<4;j++){
+                                for(int k=-3;k<4;k++){
+                                    Block block=e.getClickedBlock().getWorld().getBlockAt(e.getClickedBlock().getX()+i,e.getClickedBlock().getY()+j,e.getClickedBlock().getZ()+k);
+                                    if(block.getType()==Material.LAVA){
+                                        block.setType(Material.AIR);
+                                    }
+                                }
+                            }
+                        }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cFallingBlockStick")&&e.getAction()==Action.LEFT_CLICK_BLOCK&&e.getPlayer().getInventory().getItemInOffHand()!=null){
+                        if(e.getPlayer().getInventory().getItemInOffHand().getType().isBlock()) {
+                            Location location = e.getClickedBlock().getLocation();
+                            location.setY(location.getY() + 5);
+                            e.getClickedBlock().getWorld().spawnFallingBlock(location,e.getPlayer().getInventory().getItemInOffHand().getType(),e.getPlayer().getInventory().getItemInOffHand().getData().getData());
+                            e.getPlayer().getInventory().getItemInOffHand().setAmount(e.getPlayer().getInventory().getItemInOffHand().getAmount()-1);
+                        }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c金床")){
+                        Inventory inv=Bukkit.createInventory(null,9,"§c金床");
+                        ItemStack item=new ItemStack(Material.GLASS_PANE);
+                        for(int i=2;i<9;i++){
+                            inv.setItem(i,item);
+                        }
+                        e.getPlayer().openInventory(inv);
                     }
                 }
             }
@@ -433,6 +486,8 @@ public class LuckyBlockEvent implements Listener {
                 } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cEmeraldSword")) {
                     ItemStack item = new ItemStack(Material.EMERALD,1);
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
+                }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§c強そうな剣")){
+                    ((LivingEntity)e.getEntity()).damage(e.getDamage());
                 }
             }
         }
@@ -453,6 +508,16 @@ public class LuckyBlockEvent implements Listener {
                 }
             });
             e.getPlayer().sendMessage("追加に成功しました");
+        }else if(e.getView().getTitle().equals("§c金床")){
+            if(e.getInventory().getItem(0).hasItemMeta()&&e.getInventory().getItem(0).getAmount()==1&&e.getInventory().getItem(0).getType()==e.getInventory().getItem(1).getType()&&e.getInventory().getItem(0).getAmount()==e.getInventory().getItem(1).getAmount()){
+                ItemStack item=e.getInventory().getItem(0);
+                item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
+                e.getPlayer().getInventory().addItem(item);
+            }else{
+                e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないですじゃないです");
+                e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
+                e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
+            }
         }
     }
     @EventHandler

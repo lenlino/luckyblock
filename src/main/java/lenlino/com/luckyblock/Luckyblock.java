@@ -747,6 +747,43 @@ public final class Luckyblock extends JavaPlugin {
             ItemDrop(Material.PRISMARINE,64,b);
             ItemDrop(Material.CONDUIT,1,b);
         });
+        i.add(b->{
+           b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PARROT);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.STONE);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cMagmaSponge");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           ItemDrop(Material.SLIME_BLOCK,16,b);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cFallingBlockStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.DIAMOND_SWORD);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§c強そうな剣");
+           item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.NAME_TAG,3,b);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.ENCHANTING_TABLE);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c金床");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
