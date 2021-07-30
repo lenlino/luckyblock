@@ -25,6 +25,7 @@ import java.util.*;
 
 public class LuckyBlockEvent implements Listener {
     Luckyblock luckyblock=null;
+    Set<String> names=new HashSet<>();
     Material[] DontBlocks={
             Material.STRUCTURE_BLOCK,
             Material.STRUCTURE_VOID,
@@ -278,21 +279,35 @@ public class LuckyBlockEvent implements Listener {
                             e.getPlayer().sendMessage("頭にかぶっているものを外してください");
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lBigPickaxe")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
-                        if(!BigPicMode.containsKey(e.getPlayer().getName())){
-                            BigPicMode.put(e.getPlayer().getName(),BreakMode.TREE);
+                        if(!e.getPlayer().isSneaking()) {
+                            if(names.contains(e.getPlayer().getName())){
+                                e.getPlayer().sendMessage("ロックを解除してください(スニーク+右クリック");
+                            }else {
+                                if (!BigPicMode.containsKey(e.getPlayer().getName())) {
+                                    BigPicMode.put(e.getPlayer().getName(), BreakMode.TREE);
+                                }
+                                switch (BigPicMode.get(e.getPlayer().getName())) {
+                                    case ONE:
+                                        BigPicMode.replace(e.getPlayer().getName(), BreakMode.TREE);
+                                        break;
+                                    case TREE:
+                                        BigPicMode.replace(e.getPlayer().getName(), BreakMode.FIVE);
+                                        break;
+                                    case FIVE:
+                                        BigPicMode.replace(e.getPlayer().getName(), BreakMode.ONE);
+                                        break;
+                                }
+                                e.getPlayer().sendMessage("つるはしのモードを§e§l" + BigPicMode.get(e.getPlayer().getName()).toString() + ChatColor.RESET + "に変更しました");
+                            }
+                        }else{
+                            if(names.contains(e.getPlayer().getName())){
+                                names.remove(e.getPlayer().getName());
+                                e.getPlayer().sendMessage("ロックを解除しました");
+                            }else{
+                                names.add(e.getPlayer().getName());
+                                e.getPlayer().sendMessage("ピッケルのモードをロックしました");
+                            }
                         }
-                        switch (BigPicMode.get(e.getPlayer().getName())){
-                            case ONE:
-                                BigPicMode.replace(e.getPlayer().getName(),BreakMode.TREE);
-                                break;
-                            case TREE:
-                                BigPicMode.replace(e.getPlayer().getName(),BreakMode.FIVE);
-                                break;
-                            case FIVE:
-                                BigPicMode.replace(e.getPlayer().getName(),BreakMode.ONE);
-                                break;
-                        }
-                        e.getPlayer().sendMessage("つるはしのモードを§e§l"+BigPicMode.get(e.getPlayer().getName()).toString()+ ChatColor.RESET+"に変更しました");
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
                         e.getPlayer().openInventory(e.getPlayer().getEnderChest());
                     }

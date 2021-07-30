@@ -723,6 +723,9 @@ public final class Luckyblock extends JavaPlugin {
             item.addEnchantment(Enchantment.KNOCKBACK,5);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),new ItemStack(Material.ARROW,16));
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
