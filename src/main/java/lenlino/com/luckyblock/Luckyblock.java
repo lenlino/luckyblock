@@ -758,7 +758,7 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-           ItemDrop(Material.SLIME_BLOCK,16,b);
+           ItemDrop(Material.SLIME_BLOCK,32,b);
         });
         i.add(b->{
             ItemStack item = new ItemStack(Material.STICK);
@@ -775,7 +775,7 @@ public final class Luckyblock extends JavaPlugin {
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-            ItemDrop(Material.NAME_TAG,3,b);
+            ItemDrop(Material.NAME_TAG,8,b);
         });
         i.add(b->{
             ItemStack item=new ItemStack(Material.ENCHANTING_TABLE);
@@ -783,6 +783,49 @@ public final class Luckyblock extends JavaPlugin {
             meta.setDisplayName("§c金床");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           ItemDrop(Material.OAK_BOAT,2,b);
+        });
+        i.add(b->{
+            for(Material material: new Material[]{Material.MAGMA_BLOCK, Material.ICE, Material.PACKED_ICE}){
+                ItemDrop(material,10,b);
+            }
+        });
+        i.add(b->{
+            Villager villager= (Villager) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.VILLAGER);
+            Villager.Type[] types={Villager.Type.JUNGLE, Villager.Type.DESERT, Villager.Type.PLAINS, Villager.Type.SAVANNA, Villager.Type.SNOW, Villager.Type.SWAMP, Villager.Type.TAIGA};
+            villager.setVillagerType(types[random.nextInt(types.length)]);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.IRON_BLOCK,4);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c携帯型アイアンゴーレム");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.SNOW_BLOCK,8);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c携帯型スノーゴーレム");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           ItemDrop(Material.ENDER_PEARL,16,b);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.BOW);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cFallingBlockBow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.WHITE_BED,4,b);
+        });
+        i.add(b->{
+           ItemDrop(Material.TORCH,64,b);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*

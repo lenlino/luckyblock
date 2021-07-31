@@ -3,6 +3,8 @@ package lenlino.com.luckyblock;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -17,7 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Directional;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -52,7 +53,7 @@ public class LuckyBlockEvent implements Listener {
     };
     BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
     Random random=new Random();
-    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
+    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();あ
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
     }
@@ -149,6 +150,14 @@ public class LuckyBlockEvent implements Listener {
                     inv.setItem(i,item);
                 }
                 b.getPlayer().openInventory(inv);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型アイアンゴーレム")){
+                b.setCancelled(true);
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.IRON_GOLEM);
+                b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型スノーゴーレム")){
+                b.setCancelled(true);
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.SNOWMAN);
+                b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
             }
         }
     }
@@ -174,15 +183,31 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void PlayerEntityShootBowEvent(EntityShootBowEvent e){
-        if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {
-            e.getProjectile().addPassenger(e.getEntity());
-        } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
-            e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(this.luckyblock.plugin,e.getProjectile().getLocation().clone()));
-        } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow") && e.getEntity().getNearbyEntities(6,6,6).size()!=0) {
-            List<Entity> near = e.getEntity().getNearbyEntities(5,5,5);
-            near.get(0).setInvulnerable(true);
-            e.getProjectile().addPassenger(near.get(0));
-            near.get(0).setInvulnerable(false);
+        if(e.getBow().hasItemMeta()) {
+            if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {
+                e.getProjectile().addPassenger(e.getEntity());
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
+                e.getProjectile().setMetadata("TNTarrow", new FixedMetadataValue(this.luckyblock.plugin, e.getProjectile().getLocation().clone()));
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§lByeBow") && e.getEntity().getNearbyEntities(6, 6, 6).size() != 0) {
+                List<Entity> near = e.getEntity().getNearbyEntities(5, 5, 5);
+                near.get(0).setInvulnerable(true);
+                e.getProjectile().addPassenger(near.get(0));
+                near.get(0).setInvulnerable(false);
+            } else if (e.getBow().getItemMeta().getDisplayName().equals("§cFallingBlockBow")) {
+                if(e.getEntity().getEquipment().getItemInOffHand()!=null){
+                    if(e.getEntity().getEquipment().getItemInOffHand().getType().isBlock()) {
+                        Material material=e.getEntity().getLocation().getBlock().getType();
+                        e.getEntity().getWorld().getBlockAt(e.getEntity().getLocation()).setType(e.getEntity().getEquipment().getItemInOffHand().getType());
+                        if(!(e.getEntity().getLocation().getBlock().getState() instanceof ShulkerBox)) {
+                            e.getProjectile().addPassenger(e.getProjectile().getWorld().spawnFallingBlock(e.getProjectile().getLocation(), e.getEntity().getEquipment().getItemInOffHand().getType(),e.getEntity().getEquipment().getItemInOffHand().getData().getData()));
+                            e.getEntity().getEquipment().getItemInOffHand().setAmount(e.getEntity().getEquipment().getItemInOffHand().getAmount() - 1);
+                            e.getProjectile().setMetadata("FallingBlock", new FixedMetadataValue(this.luckyblock, e.getProjectile().getLocation()));
+                            e.getProjectile().getLocation().add(e.getEntity().getVelocity());
+                        }
+                        e.getEntity().getLocation().getBlock().setType(material);
+                    }
+                }
+            }
         }
     }
     @EventHandler
@@ -199,6 +224,9 @@ public class LuckyBlockEvent implements Listener {
                 e.getHitEntity().getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
                 e.getEntity().removeMetadata("TNTarrow", this.luckyblock.plugin);
             }
+        }else if(e.getEntity().hasMetadata("FallingBlock")){
+            e.getEntity().removeMetadata("FallingBlock",this.luckyblock);
+            e.getEntity().remove();
         }
     }
     @EventHandler
@@ -351,10 +379,17 @@ public class LuckyBlockEvent implements Listener {
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cFallingBlockStick")&&e.getAction()==Action.LEFT_CLICK_BLOCK&&e.getPlayer().getInventory().getItemInOffHand()!=null){
                         if(e.getPlayer().getInventory().getItemInOffHand().getType().isBlock()) {
-                            Location location = e.getClickedBlock().getLocation();
-                            location.setY(location.getY() + 5);
-                            e.getClickedBlock().getWorld().spawnFallingBlock(location,e.getPlayer().getInventory().getItemInOffHand().getType(),e.getPlayer().getInventory().getItemInOffHand().getData().getData());
-                            e.getPlayer().getInventory().getItemInOffHand().setAmount(e.getPlayer().getInventory().getItemInOffHand().getAmount()-1);
+                            Material material=e.getPlayer().getLocation().getBlock().getType();
+                            e.getPlayer().getWorld().getBlockAt(e.getPlayer().getLocation()).setType(e.getPlayer().getEquipment().getItemInOffHand().getType());
+                            if(!(e.getPlayer().getLocation().getBlock().getState() instanceof ShulkerBox)) {
+                                e.getPlayer().getLocation().getBlock().setType(material);
+                                Location location = e.getClickedBlock().getLocation();
+                                location.setY(location.getY() + 5);
+                                e.getClickedBlock().getWorld().spawnFallingBlock(location,e.getPlayer().getInventory().getItemInOffHand().getType(),e.getPlayer().getInventory().getItemInOffHand().getData().getData());
+                                e.getPlayer().getInventory().getItemInOffHand().setAmount(e.getPlayer().getInventory().getItemInOffHand().getAmount()-1);
+                                return;
+                            }
+                            e.getPlayer().getLocation().getBlock().setType(material);
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§c金床")){
                         Inventory inv=Bukkit.createInventory(null,9,"§c金床");
@@ -509,14 +544,16 @@ public class LuckyBlockEvent implements Listener {
             });
             e.getPlayer().sendMessage("追加に成功しました");
         }else if(e.getView().getTitle().equals("§c金床")){
-            if(e.getInventory().getItem(0).hasItemMeta()&&e.getInventory().getItem(0).getAmount()==1&&e.getInventory().getItem(0).getType()==e.getInventory().getItem(1).getType()&&e.getInventory().getItem(0).getAmount()==e.getInventory().getItem(1).getAmount()){
-                ItemStack item=e.getInventory().getItem(0);
-                item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
-                e.getPlayer().getInventory().addItem(item);
-            }else{
-                e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないですじゃないです");
-                e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
-                e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
+            if(e.getInventory().getItem(0)==null||e.getInventory().getItem(1)==null) {
+                if (e.getInventory().getItem(0).hasItemMeta() && e.getInventory().getItem(0).getAmount() == 1 && e.getInventory().getItem(0).getType() == e.getInventory().getItem(1).getType() && e.getInventory().getItem(0).getAmount() == e.getInventory().getItem(1).getAmount()) {
+                    ItemStack item = e.getInventory().getItem(0);
+                    item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
+                    e.getPlayer().getInventory().addItem(item);
+                } else {
+                    e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないですじゃないです");
+                    e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
+                    e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
+                }
             }
         }
     }
