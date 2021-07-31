@@ -306,7 +306,9 @@ public class LuckyBlockEvent implements Listener {
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lHeadStick")&&e.getItem().getType()==Material.STICK){
                         if(e.getPlayer().getInventory().getHelmet()==null){
                             if(e.getPlayer().getInventory().getItemInOffHand().getType()!=Material.AIR) {
-                                e.getPlayer().getInventory().setHelmet(e.getPlayer().getInventory().getItemInOffHand());
+                                ItemStack itemStack=e.getPlayer().getInventory().getItemInOffHand().clone();
+                                itemStack.setAmount(1);
+                                e.getPlayer().getInventory().setHelmet(itemStack);
                                 e.getPlayer().getInventory().getItemInOffHand().setAmount(e.getPlayer().getInventory().getItemInOffHand().getAmount() - 1);
                             }else{
                                 e.getPlayer().sendMessage("オフハンドにアイテムを置いてください");
