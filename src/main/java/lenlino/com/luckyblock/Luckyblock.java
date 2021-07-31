@@ -732,7 +732,7 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
            for(int j=0;j<10;j++){
                for(int k=0;k<10;k++){
-                   b.getBlock().getWorld().getBlockAt(b.getBlock().getX()+j,b.getBlock().getY(),b.getBlock().getZ()+k).setType(Material.GOLD_BLOCK);
+                   b.getBlock().getWorld().getBlockAt(b.getBlock().getX()+j,b.getBlock().getY(),b.getBlock().getZ()+k).setType(Material.IRON_BLOCK);
                }
            }
         });

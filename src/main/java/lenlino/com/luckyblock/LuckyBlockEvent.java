@@ -53,7 +53,7 @@ public class LuckyBlockEvent implements Listener {
     };
     BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
     Random random=new Random();
-    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();あ
+    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
     }
