@@ -838,7 +838,7 @@ public final class Luckyblock extends JavaPlugin {
         say %player% example
         }
         このように使う
-         */
+        */
         File file=new File(getDataFolder().getPath()+"/commands.txt");
         if(file.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
