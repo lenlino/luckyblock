@@ -546,7 +546,7 @@ public class LuckyBlockEvent implements Listener {
             });
             e.getPlayer().sendMessage("追加に成功しました");
         }else if(e.getView().getTitle().equals("§c金床")){
-            if(e.getInventory().getItem(0)==null||e.getInventory().getItem(1)==null) {
+            if(e.getInventory().getItem(0)!=null||e.getInventory().getItem(1)!=null) {
                 if (e.getInventory().getItem(0).hasItemMeta() && e.getInventory().getItem(0).getAmount() == 1 && e.getInventory().getItem(0).getType() == e.getInventory().getItem(1).getType() && e.getInventory().getItem(0).getAmount() == e.getInventory().getItem(1).getAmount()) {
                     ItemStack item = e.getInventory().getItem(0);
                     item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
