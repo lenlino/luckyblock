@@ -74,7 +74,7 @@ public class LuckyBlockEvent implements Listener {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
             b.getBlock().removeMetadata("luckySponge",this.luckyblock.plugin);
         }else if(b.getPlayer().getInventory().getItemInMainHand().getItemMeta()!=null){
-            if(b.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§e§lBigPickaxe")&&(b.getPlayer().getWorld().toString().equals("world_the_end")||b.getPlayer().getWorld().toString().equals("world_nether")||b.getPlayer().getWorld().toString().equals("world"))){
+            if(b.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§e§lBigPickaxe")){
                 if(!BigPicMode.containsKey(b.getPlayer().getName())){
                     BigPicMode.put(b.getPlayer().getName(),BreakMode.TREE);
                 }
