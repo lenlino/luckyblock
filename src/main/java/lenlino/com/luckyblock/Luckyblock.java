@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import net.minecraft.world.item.ItemBow;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -27,6 +28,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.*;
 
@@ -827,6 +829,16 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
            ItemDrop(Material.TORCH,64,b);
         });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.STICK);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cNoRideStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           ItemDrop(Material.ENDER_EYE,16,b);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
@@ -850,7 +862,7 @@ public final class Luckyblock extends JavaPlugin {
                 while ((str = br.readLine()) != null) {
                     if (str.equals("{")) {
                         if (IsData) {
-                            System.out.println("かっこが二重以上になっています");
+                            Bukkit.getLogger().warning("かっこが二重以上になっています");
                             return;
                         } else {
                             IsData = true;
@@ -878,7 +890,7 @@ public final class Luckyblock extends JavaPlugin {
                     }
                 }
                 if (number != 0) {
-                    System.out.println("luckyblock:command.txtのかっこがちゃんと閉じられていないです");
+                    getLogger().warning("{と}の数が同じじゃないです");
                 } else {
                     for (ArrayList<String> command : commands) {
                         i.add(b -> {

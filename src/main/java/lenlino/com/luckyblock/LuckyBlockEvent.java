@@ -1,11 +1,10 @@
 package lenlino.com.luckyblock;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.ShulkerBox;
+import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -400,6 +399,10 @@ public class LuckyBlockEvent implements Listener {
                             inv.setItem(i,item);
                         }
                         e.getPlayer().openInventory(inv);
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cNoRideStick")){
+                        for(Entity entity:e.getPlayer().getPassengers()){
+                            e.getPlayer().removePassenger(entity);
+                        }
                     }
                 }
             }
