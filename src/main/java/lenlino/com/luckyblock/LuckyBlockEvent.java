@@ -494,6 +494,7 @@ public class LuckyBlockEvent implements Listener {
             e.getEntity().setMetadata("mob", new FixedMetadataValue(this.luckyblock.plugin,e.getEntity().getLocation().clone()));
             e.getEntity().setCustomName("LuckyMob");
             e.getEntity().setCustomNameVisible(true);
+            e.getEntity().setPersistent(false);
         }
     }
     @EventHandler
