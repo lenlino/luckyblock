@@ -130,7 +130,6 @@ public final class Luckyblock extends JavaPlugin {
         }
         return false;
     }
-
     @Override
     public void onEnable() {
         if(!getDataFolder().exists()){
@@ -852,6 +851,13 @@ public final class Luckyblock extends JavaPlugin {
                location.setX(location.getX()-3);
                location.setY(location.getY()+1);
            }
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.ARROW,4);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cInfinityArrow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*

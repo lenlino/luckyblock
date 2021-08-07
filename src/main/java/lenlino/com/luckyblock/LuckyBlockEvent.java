@@ -206,6 +206,9 @@ public class LuckyBlockEvent implements Listener {
                         e.getEntity().getLocation().getBlock().setType(material);
                     }
                 }
+            }else if(e.getConsumable().getItemMeta().getDisplayName().equals("§cInfinityArrow")){
+                e.setCancelled(true);
+                e.getProjectile().getWorld().spawnArrow(e.getProjectile().getLocation(),e.getProjectile().getVelocity(),5,5);
             }
         }
     }
