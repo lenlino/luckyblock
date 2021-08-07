@@ -5,8 +5,6 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -838,6 +836,23 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
            ItemDrop(Material.ENDER_EYE,16,b);
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            location.setX(location.getX()-1);
+            location.setZ(location.getZ()-1);
+           for(int i=0;i<3;i++){
+               for(int j=0;j<3;j++){
+                   for(int k=0;k<3;k++){
+                       b.getPlayer().getWorld().spawnFallingBlock(location,Material.OBSIDIAN.createBlockData());
+                       location.setZ(location.getZ()+1);
+                   }
+                   location.setZ(location.getZ()-3);
+                   location.setX(location.getX()+1);
+               }
+               location.setX(location.getX()-3);
+               location.setY(location.getY()+1);
+           }
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
