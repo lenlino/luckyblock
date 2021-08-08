@@ -1,5 +1,6 @@
 package lenlino.com.luckyblock;
 
+import net.minecraft.server.v1_16_R3.ItemFireworks;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
@@ -414,6 +415,8 @@ public class LuckyBlockEvent implements Listener {
                         for(Entity entity:e.getPlayer().getPassengers()){
                             e.getPlayer().removePassenger(entity);
                         }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cLuckyItem")){
+                        e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
                     }
                 }
             }
@@ -447,11 +450,6 @@ public class LuckyBlockEvent implements Listener {
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,1200,3));
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBeetRoot")){
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEAL,200,3));
-            }else if(e.getItem().getItemMeta().getDisplayName().equals("§InfinityMilk")){
-                e.setCancelled(true);
-                for(PotionEffect effect:e.getPlayer().getActivePotionEffects()){
-                    e.getPlayer().removePotionEffect(effect.getType());
-                }
             }
         }
     }
@@ -580,25 +578,6 @@ public class LuckyBlockEvent implements Listener {
                     e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないですじゃないです");
                     e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
                     e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
-                }
-            }
-        }
-    }
-    @EventHandler
-    public void ItemChangeEvent(InventoryDragEvent e){
-        if(e.getCursor().hasItemMeta()){
-            if(e.getCursor().getItemMeta().getDisplayName().equals("§cLuckyItem")){
-                e.getWhoClicked().addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
-            }
-        }
-    }
-    @EventHandler
-    public void PotionEvent(EntityPotionEffectEvent e){
-        if(e.getAction()==EntityPotionEffectEvent.Action.REMOVED&&e.getEntityType()==EntityType.PLAYER){
-            Player player=(Player)e.getEntity();
-            if(player.getInventory().getItemInOffHand().hasItemMeta()){
-                if(player.getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§cLuckyItem")){
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
                 }
             }
         }

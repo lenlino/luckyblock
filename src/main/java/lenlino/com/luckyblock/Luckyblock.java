@@ -871,20 +871,6 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b->{
-            ItemStack item = new ItemStack(Material.MILK_BUCKET,16);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§cInfinityMilk");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b->{
-            ItemStack item = new ItemStack(Material.MILK_BUCKET,16);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§cLuckyItem");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b->{
             ItemDrop(Material.COBWEB,8,b);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
