@@ -12,7 +12,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -435,13 +438,20 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void EatBreadEvent(PlayerItemConsumeEvent e){
-        if(e.getItem().getItemMeta()!=null) {
+        if(e.getItem().hasItemMeta()) {
             if(e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")){
                 e.setCancelled(true);
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§e§lBigApple")){
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST,1200,3));
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,1200,3));
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,1200,3));
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBeetRoot")){
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEAL,200,3));
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§InfinityMilk")){
+                e.setCancelled(true);
+                for(PotionEffect effect:e.getPlayer().getActivePotionEffects()){
+                    e.getPlayer().removePotionEffect(effect.getType());
+                }
             }
         }
     }
@@ -572,6 +582,31 @@ public class LuckyBlockEvent implements Listener {
                     e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
                 }
             }
+        }
+    }
+    @EventHandler
+    public void ItemChangeEvent(InventoryDragEvent e){
+        if(e.getCursor().hasItemMeta()){
+            if(e.getCursor().getItemMeta().getDisplayName().equals("§cLuckyItem")){
+                e.getWhoClicked().addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
+            }
+        }
+    }
+    @EventHandler
+    public void PotionEvent(EntityPotionEffectEvent e){
+        if(e.getAction()==EntityPotionEffectEvent.Action.REMOVED&&e.getEntityType()==EntityType.PLAYER){
+            Player player=(Player)e.getEntity();
+            if(player.getInventory().getItemInOffHand().hasItemMeta()){
+                if(player.getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§cLuckyItem")){
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
+                }
+            }
+        }
+    }
+    @EventHandler
+    public void InventoryClickEvent(InventoryClickEvent e){
+        if(e.getView().getTitle().equals("§c金床")){
+            e.setCancelled(true);
         }
     }
     @EventHandler

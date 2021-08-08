@@ -249,16 +249,6 @@ public final class Luckyblock extends JavaPlugin {
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         i.add(b -> {
-            ItemStack item = new ItemStack(Material.LEATHER_BOOTS);
-            ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§lSuperSpeedBoots");
-            AttributeModifier m = new AttributeModifier(UUID.randomUUID(),"speed", 3, AttributeModifier.Operation.ADD_NUMBER,EquipmentSlot.FEET);
-            meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED,m);
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(), item);
-        });
-
-        i.add(b -> {
             ItemStack item = new ItemStack(Material.ELYTRA);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("Armored Elytra");
@@ -872,6 +862,30 @@ public final class Luckyblock extends JavaPlugin {
             meta.setDisplayName("§cTNT");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.BEETROOT,16);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cBeetRoot");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.MILK_BUCKET,16);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cInfinityMilk");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.MILK_BUCKET,16);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cLuckyItem");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.COBWEB,8,b);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
