@@ -134,7 +134,7 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void placeblock(BlockPlaceEvent b) {
-        if(b.getItemInHand().getItemMeta()!=null) {
+        if(b.getItemInHand().getItemMeta()!=null&&b.canBuild()==true&&b.isCancelled()==false) {
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
             }else if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
@@ -157,6 +157,10 @@ public class LuckyBlockEvent implements Listener {
                 b.setCancelled(true);
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.SNOWMAN);
                 b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§cTNT")){
+                b.setCancelled(true);
+                b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PRIMED_TNT);
             }
         }
     }
@@ -183,6 +187,10 @@ public class LuckyBlockEvent implements Listener {
     @EventHandler
     public void PlayerEntityShootBowEvent(EntityShootBowEvent e){
         if(e.getBow().hasItemMeta()) {
+            if(e.getConsumable().getItemMeta().getDisplayName().equals("§cInfinityArrow")){
+                e.setCancelled(true);
+                e.getProjectile().getWorld().spawnArrow(e.getProjectile().getLocation(),e.getProjectile().getVelocity(),5,5);
+            }
             if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {
                 e.getProjectile().addPassenger(e.getEntity());
             } else if (e.getBow().getItemMeta().getDisplayName().equals("§lTNTBow")) {
@@ -193,12 +201,12 @@ public class LuckyBlockEvent implements Listener {
                 e.getProjectile().addPassenger(near.get(0));
                 near.get(0).setInvulnerable(false);
             } else if (e.getBow().getItemMeta().getDisplayName().equals("§cFallingBlockBow")) {
-                if(e.getEntity().getEquipment().getItemInOffHand()!=null){
-                    if(e.getEntity().getEquipment().getItemInOffHand().getType().isBlock()) {
-                        Material material=e.getEntity().getLocation().getBlock().getType();
+                if (e.getEntity().getEquipment().getItemInOffHand() != null) {
+                    if (e.getEntity().getEquipment().getItemInOffHand().getType().isBlock()) {
+                        Material material = e.getEntity().getLocation().getBlock().getType();
                         e.getEntity().getWorld().getBlockAt(e.getEntity().getLocation()).setType(e.getEntity().getEquipment().getItemInOffHand().getType());
-                        if(!(e.getEntity().getLocation().getBlock().getState() instanceof ShulkerBox)) {
-                            e.getProjectile().addPassenger(e.getProjectile().getWorld().spawnFallingBlock(e.getProjectile().getLocation(), e.getEntity().getEquipment().getItemInOffHand().getType(),e.getEntity().getEquipment().getItemInOffHand().getData().getData()));
+                        if (!(e.getEntity().getLocation().getBlock().getState() instanceof ShulkerBox)) {
+                            e.getProjectile().addPassenger(e.getProjectile().getWorld().spawnFallingBlock(e.getProjectile().getLocation(), e.getEntity().getEquipment().getItemInOffHand().getType(), e.getEntity().getEquipment().getItemInOffHand().getData().getData()));
                             e.getEntity().getEquipment().getItemInOffHand().setAmount(e.getEntity().getEquipment().getItemInOffHand().getAmount() - 1);
                             e.getProjectile().setMetadata("FallingBlock", new FixedMetadataValue(this.luckyblock, e.getProjectile().getLocation()));
                             e.getProjectile().getLocation().add(e.getEntity().getVelocity());
@@ -206,9 +214,6 @@ public class LuckyBlockEvent implements Listener {
                         e.getEntity().getLocation().getBlock().setType(material);
                     }
                 }
-            }else if(e.getConsumable().getItemMeta().getDisplayName().equals("§cInfinityArrow")){
-                e.setCancelled(true);
-                e.getProjectile().getWorld().spawnArrow(e.getProjectile().getLocation(),e.getProjectile().getVelocity(),5,5);
             }
         }
     }
@@ -532,6 +537,9 @@ public class LuckyBlockEvent implements Listener {
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
                 }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§c強そうな剣")){
                     ((LivingEntity)e.getEntity()).damage(e.getDamage());
+                }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cCoalSword")){
+                    ItemStack item = new ItemStack(Material.COAL,1);
+                    e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
                 }
             }
         }

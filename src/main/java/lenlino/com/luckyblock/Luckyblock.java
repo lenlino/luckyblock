@@ -859,6 +859,20 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cCoalSword");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.TNT,8);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cTNT");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         /*
         使うファイルはcommands.txt
