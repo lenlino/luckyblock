@@ -6,6 +6,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -870,6 +871,21 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.MILK_BUCKET);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cInfinityMilk");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.EMERALD);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cLuckyItem");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+
         i.add(b->{
             ItemDrop(Material.COBWEB,8,b);
         });

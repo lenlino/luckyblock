@@ -15,8 +15,6 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -450,6 +448,19 @@ public class LuckyBlockEvent implements Listener {
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,1200,3));
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBeetRoot")){
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEAL,200,3));
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§cInfinityMilk")) {
+                e.getPlayer().getActivePotionEffects().clear();
+            }
+        }
+    }
+    @EventHandler
+    public void PotionEvent(EntityPotionEffectEvent e){
+        if(e.getEntityType()==EntityType.PLAYER&&e.getAction()!= EntityPotionEffectEvent.Action.CLEARED){
+            Player player=(Player)e.getEntity();
+            if(player.getInventory().getItemInOffHand().hasItemMeta()){
+                if(player.getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§cLuckyItem")){
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,3));
+                }
             }
         }
     }
