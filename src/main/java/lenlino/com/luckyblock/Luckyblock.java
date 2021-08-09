@@ -6,7 +6,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -26,17 +25,16 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.*;
 
 
 public final class Luckyblock extends JavaPlugin {
     Plugin plugin=this;
-    ArrayList<risuto> i=new ArrayList<risuto>();
+    ArrayList<risuto> i=new ArrayList<>();
     FileConfiguration fc=getConfig();
     Random random=new Random();
-    Color[] colors={Color.AQUA,Color.BLACK,Color.BLUE,Color.ORANGE, Color.FUCHSIA, Color.GREEN, Color.GRAY, Color.LIME, Color.MAROON, Color.OLIVE, Color.NAVY, Color.PURPLE, Color.RED, Color.SILVER, Color.TEAL, Color.YELLOW, Color.WHITE};
+    Map<EntityType,Double> SpawnEnetities=new HashMap<>();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("lbget")) {
@@ -293,7 +291,7 @@ public final class Luckyblock extends JavaPlugin {
         });
 
         i.add(b -> {
-            EnderCrystal enderCrystal=(EnderCrystal)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.ENDER_CRYSTAL);;
+            EnderCrystal enderCrystal=(EnderCrystal)b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(), EntityType.ENDER_CRYSTAL);
             enderCrystal.setRotation(200,200);
 
         });
@@ -369,7 +367,6 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b -> {
             b.getBlock().getWorld().strikeLightning(b.getPlayer().getLocation());
         });
-
         i.add(b -> {
             Horse h = (Horse) b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.HORSE);
             h.setJumpStrength(2);
@@ -689,22 +686,22 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
             Location location=b.getBlock().getLocation();
             location.setY(location.getY()+10);
-           FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.DIAMOND_BLOCK));
+            b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.DIAMOND_BLOCK));
         });
         i.add(b->{
             Location location=b.getBlock().getLocation();
             location.setY(location.getY()+10);
-            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.GOLD_BLOCK));
+            b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.GOLD_BLOCK));
         });
         i.add(b->{
             Location location=b.getBlock().getLocation();
             location.setY(location.getY()+10);
-            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.EMERALD_BLOCK));
+            b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.EMERALD_BLOCK));
         });
         i.add(b->{
             Location location=b.getBlock().getLocation();
             location.setY(location.getY()+10);
-            FallingBlock fallingBlock =b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.IRON_BLOCK));
+            b.getBlock().getWorld().spawnFallingBlock(location, new MaterialData(Material.IRON_BLOCK));
         });
         i.add(b->{
             ItemStack item=new ItemStack(Material.DIAMOND_SWORD);
@@ -882,14 +879,45 @@ public final class Luckyblock extends JavaPlugin {
             ItemStack item = new ItemStack(Material.EMERALD);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§cLuckyItem");
+            List<String> stringArrayList=new ArrayList<>();
+            stringArrayList.add(b.getPlayer().getName());
+            meta.setLore(stringArrayList);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.COBWEB,8,b);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.FEATHER);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cなんかできそうな羽");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
 
-        i.add(b->{
-            ItemDrop(Material.COBWEB,8,b);
-        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
+        File EntityData=new File(getDataFolder(),"EntityData.txt");
+        try{
+            if(!EntityData.exists()){
+                EntityData.createNewFile();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        try(BufferedReader br=new BufferedReader(new FileReader(EntityData))){
+            String str;
+            while((str=br.readLine())!=null){
+                String[] strs=str.split(":",2);
+                if(strs.length!=2){
+                    getLogger().info("ファイルの内容がおかしいです");
+                }else{
+                    SpawnEnetities.put(EntityType.valueOf(strs[0]),Double.parseDouble(strs[1]));
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         /*
         使うファイルはcommands.txt
         ブロックを壊した人を指定するときは%player%を使う
@@ -933,7 +961,7 @@ public final class Luckyblock extends JavaPlugin {
                                 commands.get(commands.size() - 1).add(str);
                             }
                         } else {
-                            ArrayList<String> command = new ArrayList<String>();
+                            ArrayList<String> command = new ArrayList<>();
                             command.add(str);
                             commands.add(command);
                         }

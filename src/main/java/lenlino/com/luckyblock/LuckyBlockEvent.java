@@ -1,11 +1,7 @@
 package lenlino.com.luckyblock;
 
-import net.minecraft.server.v1_16_R3.ItemFireworks;
 import org.bukkit.*;
 import org.bukkit.block.*;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.type.Chest;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -23,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import java.util.*;
@@ -55,6 +52,7 @@ public class LuckyBlockEvent implements Listener {
     BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
     Random random=new Random();
     HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
+    HashSet<String> stringHashSet=new HashSet<>();
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
     }
@@ -241,7 +239,7 @@ public class LuckyBlockEvent implements Listener {
     @EventHandler
     public void ClickEvent(PlayerInteractEvent e){
         if(e.getItem()!=null) {
-            if(e.getItem().getItemMeta()!=null) {
+            if(e.getItem().hasItemMeta()) {
                 if(e.getItem().getItemMeta().getDisplayName()!=null) {
                     if (e.getItem().getItemMeta().getDisplayName().equals("§a§lkoufuのパン")) {
                         if (e.getItem().getItemMeta().getLore().size() == 3) {
@@ -414,7 +412,20 @@ public class LuckyBlockEvent implements Listener {
                             e.getPlayer().removePassenger(entity);
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cLuckyItem")){
-                        e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,5));
+                        if(e.getItem().getItemMeta().getLore().size()==1){
+                            if(e.getItem().getItemMeta().getLore().get(0).equals(e.getPlayer().getName())){
+                                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LUCK,Integer.MAX_VALUE,5));
+                            }
+                        }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cなんかできそうな羽")&&!stringHashSet.contains(e.getPlayer().getName())){
+                        e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,4,10));
+                        stringHashSet.add(e.getPlayer().getName());
+                        new BukkitRunnable(){
+                            @Override
+                            public void run() {
+                                stringHashSet.remove(e.getPlayer().getName());
+                            }
+                        }.runTaskLater(this.luckyblock,20);
                     }
                 }
             }
@@ -449,17 +460,9 @@ public class LuckyBlockEvent implements Listener {
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBeetRoot")){
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HEAL,200,3));
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cInfinityMilk")) {
-                e.getPlayer().getActivePotionEffects().clear();
-            }
-        }
-    }
-    @EventHandler
-    public void PotionEvent(EntityPotionEffectEvent e){
-        if(e.getEntityType()==EntityType.PLAYER&&e.getAction()!= EntityPotionEffectEvent.Action.CLEARED){
-            Player player=(Player)e.getEntity();
-            if(player.getInventory().getItemInOffHand().hasItemMeta()){
-                if(player.getInventory().getItemInOffHand().getItemMeta().getDisplayName().equals("§cLuckyItem")){
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK,1000,3));
+                e.setCancelled(true);
+                for(PotionEffect effect:e.getPlayer().getActivePotionEffects()){
+                    e.getPlayer().removePotionEffect(effect.getType());
                 }
             }
         }
@@ -510,18 +513,14 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void CreatureSpawnEvent(CreatureSpawnEvent e) {
-        double d;
-        d = Math.random();
-        List<EntityType> spawn = new ArrayList<EntityType> ();
-        spawn.add(EntityType.ZOMBIE);
-        spawn.add(EntityType.SKELETON);
-        spawn.add(EntityType.ZOMBIFIED_PIGLIN);
-        spawn.add(EntityType.CREEPER);
-        if (d>0.99 && e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
-            e.getEntity().setMetadata("mob", new FixedMetadataValue(this.luckyblock.plugin,e.getEntity().getLocation().clone()));
-            e.getEntity().setCustomName("LuckyMob");
-            e.getEntity().setCustomNameVisible(true);
-            e.getEntity().setPersistent(false);
+        if(this.luckyblock.SpawnEnetities.containsKey(e.getEntityType())) {
+            double d = Math.random();
+            if (d<this.luckyblock.SpawnEnetities.get(e.getEntityType())&&e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
+                e.getEntity().setMetadata("mob", new FixedMetadataValue(this.luckyblock.plugin, e.getEntity().getLocation().clone()));
+                e.getEntity().setCustomName("LuckyMob");
+                e.getEntity().setCustomNameVisible(true);
+                e.getEntity().setPersistent(false);
+            }
         }
     }
     @EventHandler
