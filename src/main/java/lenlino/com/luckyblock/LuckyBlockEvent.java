@@ -526,7 +526,7 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void dropevent(EntityDeathEvent e) {
-        if (e.getEntity().hasMetadata("mob")) {
+        if (e.getEntity().hasMetadata("mob") && e.getEntity().getKiller()!=null) {
             e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), luckyblock.createskull(1));
         }
     }
