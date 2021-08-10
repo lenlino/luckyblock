@@ -1,5 +1,12 @@
 package lenlino.com.luckyblock;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.bukkit.BukkitUtil;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
@@ -87,12 +94,12 @@ public class LuckyBlockEvent implements Listener {
                             return;
                         }
                     }
-                    BreakBlocks(b.getBlock(),b.getPlayer().getInventory().getItemInMainHand(),BigPicMode.get(b.getPlayer().getName()));
+                    BreakBlocks(b.getBlock(),b.getPlayer().getInventory().getItemInMainHand(),BigPicMode.get(b.getPlayer().getName()),b.getPlayer());
                 }
             }
         }
     }
-    public void BreakBlocks(Block block,ItemStack tool,BreakMode mode){
+    public void BreakBlocks(Block block,ItemStack tool,BreakMode mode,Player p){
         Location l=block.getLocation();
         int number=3;
         if(mode==BreakMode.FIVE){
@@ -104,13 +111,13 @@ public class LuckyBlockEvent implements Listener {
         for(int i=0;i<number;i++){//X
             for(int j=0;j<number;j++){//Y
                 for(int k=0;k<number;k++){//Z
-                    if(IsRightBlock(block.getWorld().getBlockAt(l))){
+                    if(IsRightBlock(block.getWorld().getBlockAt(l),p)){
                         if(!block.getWorld().getBlockAt(l).hasMetadata("lucky")&&!block.hasMetadata("luckySponge")){
                             for(ItemStack itemStack:block.getWorld().getBlockAt(l).getDrops(tool)) {
                                 block.getWorld().dropItem(block.getWorld().getBlockAt(l).getLocation(),itemStack);
                             }
+                            block.getWorld().getBlockAt(l).setType(Material.AIR);
                         }
-                        block.getWorld().getBlockAt(l).setType(Material.AIR);
                     }
                     l.setZ(l.getZ()+1);
                 }
@@ -121,7 +128,12 @@ public class LuckyBlockEvent implements Listener {
             l.setX(l.getX()+1);
         }
     }
-    public boolean IsRightBlock(Block b){
+    public boolean IsRightBlock(Block b,Player p){
+        if(this.luckyblock.IsWorldGuard==true){
+            if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()), this.luckyblock.worldGuardPlugin.wrapPlayer(p), new StateFlag(Flags.BLOCK_BREAK.getName(),true))){
+                return false;
+            }
+        }
         if(b.hasMetadata("lucky")||b.hasMetadata("luckySponge")){
             return false;
         }

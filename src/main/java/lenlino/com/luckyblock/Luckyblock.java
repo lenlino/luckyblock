@@ -1,5 +1,9 @@
 package lenlino.com.luckyblock;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -35,6 +39,10 @@ public final class Luckyblock extends JavaPlugin {
     FileConfiguration fc=getConfig();
     Random random=new Random();
     Map<EntityType,Double> SpawnEnetities=new HashMap<>();
+    boolean IsWorldGuard=true;
+    WorldGuardPlugin worldGuardPlugin=WorldGuardPlugin.inst();
+    RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+    RegionQuery query = container.createQuery();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("lbget")) {
@@ -987,6 +995,9 @@ public final class Luckyblock extends JavaPlugin {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if(Bukkit.getPluginManager().getPlugin("WorldGuard")!=null){
+            IsWorldGuard=false;
         }
     }
     @Override

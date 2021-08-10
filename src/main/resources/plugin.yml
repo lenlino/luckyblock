@@ -2,6 +2,7 @@ name: Luckyblock
 version: ${project.version}
 main: lenlino.com.luckyblock.Luckyblock
 api-version: 1.16
+depend: [WorldGuard]
 commands:
   lbget:
     description: ラッキーブロック獲得
