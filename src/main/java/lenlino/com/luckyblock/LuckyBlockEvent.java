@@ -112,12 +112,10 @@ public class LuckyBlockEvent implements Listener {
             for(int j=0;j<number;j++){//Y
                 for(int k=0;k<number;k++){//Z
                     if(IsRightBlock(block.getWorld().getBlockAt(l),p)){
-                        if(!block.getWorld().getBlockAt(l).hasMetadata("lucky")&&!block.hasMetadata("luckySponge")){
                             for(ItemStack itemStack:block.getWorld().getBlockAt(l).getDrops(tool)) {
                                 block.getWorld().dropItem(block.getWorld().getBlockAt(l).getLocation(),itemStack);
                             }
                             block.getWorld().getBlockAt(l).setType(Material.AIR);
-                        }
                     }
                     l.setZ(l.getZ()+1);
                 }
@@ -131,6 +129,7 @@ public class LuckyBlockEvent implements Listener {
     public boolean IsRightBlock(Block b,Player p){
         if(this.luckyblock.IsWorldGuard==true){
             if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()), this.luckyblock.worldGuardPlugin.wrapPlayer(p), new StateFlag(Flags.BLOCK_BREAK.getName(),true))){
+                p.sendMessage(String.valueOf(this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()), this.luckyblock.worldGuardPlugin.wrapPlayer(p), new StateFlag(Flags.BLOCK_BREAK.getName(),true))));
                 return false;
             }
         }
