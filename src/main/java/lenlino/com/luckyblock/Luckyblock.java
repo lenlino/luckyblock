@@ -996,11 +996,13 @@ public final class Luckyblock extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-        worldGuardPlugin=WorldGuardPlugin.inst();
-        container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        query = container.createQuery();
-        if(Bukkit.getPluginManager().getPlugin("WorldGuard")==null){
+        Plugin plugin1=Bukkit.getPluginManager().getPlugin("WorldGuard");
+        if(plugin1==null||!(plugin1 instanceof WorldGuardPlugin)){
             IsWorldGuard=false;
+        }else{
+            worldGuardPlugin=WorldGuardPlugin.inst();
+            container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            query = container.createQuery();
         }
     }
     @Override

@@ -127,9 +127,9 @@ public class LuckyBlockEvent implements Listener {
         }
     }
     public boolean IsRightBlock(Block b,Player p){
-        p.sendMessage(String.valueOf(this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),new StateFlag("block-break",true))));
+        p.sendMessage(String.valueOf(this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)));
         if(this.luckyblock.IsWorldGuard==true){
-            if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()), this.luckyblock.worldGuardPlugin.wrapPlayer(p), new StateFlag("block-break",true))){
+        if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)){
                 return false;
             }
         }
