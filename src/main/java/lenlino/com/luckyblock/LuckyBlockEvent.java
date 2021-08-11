@@ -1,12 +1,8 @@
 package lenlino.com.luckyblock;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.bukkit.BukkitUtil;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.bukkit.event.entity.DamageEntityEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +15,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -127,7 +124,6 @@ public class LuckyBlockEvent implements Listener {
         }
     }
     public boolean IsRightBlock(Block b,Player p){
-        p.sendMessage(String.valueOf(this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)));
         if(this.luckyblock.IsWorldGuard==true){
         if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)){
                 return false;
@@ -542,7 +538,7 @@ public class LuckyBlockEvent implements Listener {
     }
 
     @EventHandler
-    public void damageevent(EntityDamageByEntityEvent e) {
+    public void damageeventByEntity(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType().isAlive()) {
             LivingEntity l = (LivingEntity) e.getDamager();
             if (l.getEquipment().getItemInMainHand().hasItemMeta()) {

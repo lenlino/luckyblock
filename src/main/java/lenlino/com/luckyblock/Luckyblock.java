@@ -903,7 +903,11 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
-
+        i.add(b->{
+            for(int j=0;j<random.nextInt(3)+2;j++){
+                i.get(random.nextInt(i.size())).onigiri(b);
+            }
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{
