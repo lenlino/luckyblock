@@ -93,8 +93,35 @@ public class LuckyBlockEvent implements Listener {
                     }
                     BreakBlocks(b.getBlock(),b.getPlayer().getInventory().getItemInMainHand(),BigPicMode.get(b.getPlayer().getName()),b.getPlayer());
                 }
+            }else if(b.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c一括破壊斧")){
+                //一括破壊斧作る部分
+                List<Block> blocks=new ArrayList<>();
+                blocks.add(b.getBlock());
+                for(int i=0;i<20;i++){
+                    if(blocks.size()<=i){
+                        return;
+                    }
+                    breakBlocks(b.getPlayer(),blocks.get(i),blocks);
+                }
             }
         }
+    }
+    private void breakBlocks(Player p,Block b,List<Block> blocks){
+        for(BlockFace blockFace:blockFaces){
+            if(b.getRelative(blockFace).getType()==b.getType()){
+                blocks.add(b.getRelative(blockFace));
+            }
+        }
+        if(this.luckyblock.worldGuardPlugin!=null){
+            if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)){
+                return;
+            }
+        }
+
+        for(ItemStack item:b.getDrops()){
+            b.getWorld().dropItem(b.getLocation(),item);
+        }
+        b.setType(Material.AIR);
     }
     public void BreakBlocks(Block block,ItemStack tool,BreakMode mode,Player p){
         Location l=block.getLocation();
@@ -560,8 +587,8 @@ public class LuckyBlockEvent implements Listener {
                 } else if (l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cEmeraldSword")) {
                     ItemStack item = new ItemStack(Material.EMERALD,1);
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
-                }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§c強そうな剣")){
-                    ((LivingEntity)e.getEntity()).damage(e.getDamage());
+                }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§c強そうな剣")&&e.isCancelled()){
+                    ((LivingEntity)e.getEntity()).damage(e.getDamage(),e.getDamager());
                 }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cCoalSword")){
                     ItemStack item = new ItemStack(Material.COAL,1);
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);

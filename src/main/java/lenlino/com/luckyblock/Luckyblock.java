@@ -908,6 +908,13 @@ public final class Luckyblock extends JavaPlugin {
                 i.get(random.nextInt(i.size())).onigiri(b);
             }
         });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.DIAMOND_AXE);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§c一括破壊斧");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{
