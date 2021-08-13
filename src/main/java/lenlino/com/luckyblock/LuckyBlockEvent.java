@@ -63,6 +63,11 @@ public class LuckyBlockEvent implements Listener {
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
         Wood_With_Leaf.put(Material.OAK_LOG,Material.OAK_LEAVES);
+        Wood_With_Leaf.put(Material.ACACIA_LOG,Material.ACACIA_LEAVES);
+        Wood_With_Leaf.put(Material.BIRCH_LOG,Material.BIRCH_LEAVES);
+        Wood_With_Leaf.put(Material.JUNGLE_LOG,Material.JUNGLE_LEAVES);
+        Wood_With_Leaf.put(Material.DARK_OAK_LOG,Material.DARK_OAK_LEAVES);
+        Wood_With_Leaf.put(Material.SPRUCE_LOG,Material.SPRUCE_LEAVES);
     }
     @EventHandler
     public void breakblock(BlockBreakEvent b) {
