@@ -57,11 +57,18 @@ public class LuckyBlockEvent implements Listener {
     Random random=new Random();
     HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
     HashSet<String> stringHashSet=new HashSet<>();
+    HashMap<String,WoodBreakMood> WoodBreak=new HashMap<>();
+    HashMap<Material,Material> Wood_With_Leaf=new HashMap<>();
+    Set<String> WoodSet=new HashSet<>();
     public LuckyBlockEvent(Luckyblock luckyblock){
         this.luckyblock=luckyblock;
+        Wood_With_Leaf.put(Material.OAK_LOG,Material.OAK_LEAVES);
     }
     @EventHandler
     public void breakblock(BlockBreakEvent b) {
+        if(b.isCancelled()){
+            return;
+        }
         if(b.getBlock().hasMetadata("lucky")){
             b.getBlock().setType(Material.AIR);
             b.getBlock().removeMetadata("lucky",this.luckyblock.plugin);
@@ -95,13 +102,18 @@ public class LuckyBlockEvent implements Listener {
                 }
             }else if(b.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c一括破壊斧")){
                 //一括破壊斧作る部分
-                List<Block> blocks=new ArrayList<>();
-                blocks.add(b.getBlock());
-                for(int i=0;i<20;i++){
-                    if(blocks.size()<=i){
-                        return;
+                if(Wood_With_Leaf.containsKey(b.getBlock().getType())) {
+                    if (!WoodBreak.containsKey(b.getPlayer().getName())) {
+                        WoodBreak.put(b.getPlayer().getName(), WoodBreakMood.WITH_LEAF);
                     }
-                    breakBlocks(b.getPlayer(),blocks.get(i),blocks);
+                    List<Block> blocks = new ArrayList<>();
+                    blocks.add(b.getBlock());
+                    for (int i = 0; i < 100; i++) {
+                        if (blocks.size() <= i) {
+                            return;
+                        }
+                        breakBlocks(b.getPlayer(), blocks.get(i), blocks);
+                    }
                 }
             }
         }
@@ -110,6 +122,12 @@ public class LuckyBlockEvent implements Listener {
         for(BlockFace blockFace:blockFaces){
             if(b.getRelative(blockFace).getType()==b.getType()){
                 blocks.add(b.getRelative(blockFace));
+            }else if(WoodBreak.containsKey(p.getName())){
+                if(WoodBreak.get(p.getName())==WoodBreakMood.WITH_LEAF){
+                    if(b.getRelative(blockFace).getType()==Wood_With_Leaf.get(b.getType())){
+                        blocks.add(b.getRelative(blockFace));
+                    }
+                }
             }
         }
         if(this.luckyblock.worldGuardPlugin!=null){
@@ -168,7 +186,7 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void placeblock(BlockPlaceEvent b) {
-        if(b.getItemInHand().getItemMeta()!=null&&b.canBuild()==true&&b.isCancelled()==false) {
+        if(b.getItemInHand().getItemMeta()!=null&&b.isCancelled()==false&&b.canBuild()==true) {
             if (b.getItemInHand().getItemMeta().getDisplayName().equals("§lluckyblock")) {
                 b.getBlock().setMetadata("lucky", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
             }else if(b.getItemInHand().getType() == Material.SPONGE && b.getItemInHand().getItemMeta().getDisplayName().equals("§e§lSPONGE")) {
@@ -460,6 +478,31 @@ public class LuckyBlockEvent implements Listener {
                                 stringHashSet.remove(e.getPlayer().getName());
                             }
                         }.runTaskLater(this.luckyblock,20);
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c一括破壊斧")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
+                        if(!e.getPlayer().isSneaking()) {
+                            if(!WoodSet.contains(e.getPlayer().getName())) {
+                                if (!WoodBreak.containsKey(e.getPlayer().getName())) {
+                                    e.getPlayer().sendMessage("斧のモードを§e§l葉を入れないモード" + ChatColor.RESET + "にしました");
+                                    WoodBreak.put(e.getPlayer().getName(), WoodBreakMood.NO_LEAF);
+                                } else if (WoodBreak.get(e.getPlayer().getName()) == WoodBreakMood.WITH_LEAF) {
+                                    e.getPlayer().sendMessage("斧のモードを§e§l葉を入れないモード" + ChatColor.RESET + "にしました");
+                                    WoodBreak.replace(e.getPlayer().getName(), WoodBreakMood.NO_LEAF);
+                                } else {
+                                    e.getPlayer().sendMessage("斧のモードを§e§l葉を入れるモード" + ChatColor.RESET + "にしました");
+                                    WoodBreak.replace(e.getPlayer().getName(), WoodBreakMood.WITH_LEAF);
+                                }
+                            }else{
+                                e.getPlayer().sendMessage("モードを変えるには、シフト+右クリ");
+                            }
+                        }else{
+                            if(WoodSet.contains(e.getPlayer().getName())){
+                                WoodSet.remove(e.getPlayer().getName());
+                                e.getPlayer().sendMessage("ロックを解除しました");
+                            }else{
+                                WoodSet.add(e.getPlayer().getName());
+                                e.getPlayer().sendMessage("ロックしました");
+                            }
+                        }
                     }
                 }
             }
@@ -503,6 +546,9 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void WaterEvent(PlayerBucketEmptyEvent e){
+        if(e.isCancelled()){
+            return;
+        }
         e.setCancelled(true);
         if(e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
             if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteWaterBucket")) {
@@ -520,6 +566,9 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void BucketEvent(PlayerBucketFillEvent e){
+        if(e.isCancelled()){
+            return;
+        }
         e.setCancelled(true);
         if(e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
             if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§c§lInfiniteNoneBucket")) {
