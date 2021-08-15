@@ -504,7 +504,6 @@ public class LuckyBlockEvent implements Listener {
                                 e.getPlayer().openInventory(inv);
                             }
                         }
-                        e.getItem().setAmount(e.getItem().getAmount()-1);
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cTPStick")&&e.getAction()==Action.RIGHT_CLICK_BLOCK){
                         if(1<=e.getPlayer().getLevel()) {
                             e.getPlayer().teleport(e.getClickedBlock().getRelative(e.getBlockFace()).getLocation());
