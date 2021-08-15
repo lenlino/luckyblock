@@ -673,7 +673,7 @@ public class LuckyBlockEvent implements Listener {
                     ItemStack item = new ItemStack(Material.EMERALD,1);
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
                 }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§c強そうな剣")&&e.isCancelled()==false){
-                    ((LivingEntity)e.getEntity()).damage(e.getDamage(),e.getDamager());
+                    ((LivingEntity)e.getEntity()).damage(e.getDamage());
                 }else if(l.getEquipment().getItemInMainHand().getItemMeta().getDisplayName().equals("§cCoalSword")){
                     ItemStack item = new ItemStack(Material.COAL,1);
                     e.getEntity().getWorld().dropItem(e.getEntity().getLocation(),item);
