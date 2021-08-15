@@ -8,6 +8,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -911,7 +913,52 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
             ItemStack item = new ItemStack(Material.DIAMOND_AXE);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§c一括破壊斧");
+            meta.setDisplayName("§cBigAxe");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            b.getBlock().setType(Material.CAKE);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.EGG,4);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cCreeperEgg");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.SHULKER_BOX);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cShulker Box");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.BLAZE_ROD,16,b);
+        });
+        i.add(b->{
+            b.getPlayer().setLevel(b.getPlayer().getLevel()+10);
+        });
+        i.add(b->{
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§cTPStick");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            Location location=b.getPlayer().getLocation();
+            location.setY(location.getY()+100);
+           b.getPlayer().teleport(location);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.BOOK);
+            ItemMeta meta=item.getItemMeta();
+            BookMeta Bookmeta= (BookMeta) meta;
+            Bookmeta.setDisplayName("(´・ω・`)");
+            Bookmeta.setAuthor(b.getPlayer().getDisplayName());
+            Bookmeta.addPage(new String[]{"§kページの内容が思いつかん...\n"+"im sleeping...\n"+ChatColor.RESET+"(」・ω・)」うー！(／・ω・)／にゃー！"});
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
