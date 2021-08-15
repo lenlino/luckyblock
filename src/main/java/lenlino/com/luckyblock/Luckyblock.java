@@ -953,14 +953,58 @@ public final class Luckyblock extends JavaPlugin {
            b.getPlayer().teleport(location);
         });
         i.add(b->{
-            ItemStack item=new ItemStack(Material.BOOK);
-            ItemMeta meta=item.getItemMeta();
-            BookMeta Bookmeta= (BookMeta) meta;
-            Bookmeta.setDisplayName("(´・ω・`)");
-            Bookmeta.setAuthor(b.getPlayer().getDisplayName());
-            Bookmeta.addPage(new String[]{"§kページの内容が思いつかん...\n"+"im sleeping...\n"+ChatColor.RESET+"(」・ω・)」うー！(／・ω・)／にゃー！"});
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+            ItemDrop(Material.COMPASS,1,b);
+        });
+        i.add(b->{
+           b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.ELDER_GUARDIAN);
+        });
+        i.add(b->{
+            b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING,400,5));
+            Location location=b.getPlayer().getLocation();
+            location.setY(location.getY()-1);
+            location.setX(location.getX()-1);
+            location.setZ(location.getZ()-1);
+            for(int i=0;i<3;i++){
+                for(int j=0;j<3;j++){
+                    for(int k=0;k<4;k++){
+                        if(!((k==1||k==2)&&i==1&&j==1)) {
+                            b.getPlayer().getWorld().getBlockAt(location).setType(Material.GLASS);
+                        }
+                        location.setY(location.getY()+1);
+                    }
+                    location.setY(location.getY()-4);
+                    location.setX(location.getX()+1);
+                }
+                location.setX(location.getX()-3);
+                location.setZ(location.getZ()+1);
+            }
+        });
+        i.add(b->{
+           for(PotionEffectType type:PotionEffectType.values()){
+               b.getPlayer().addPotionEffect(new PotionEffect(type,100,10));
+           }
+        });
+        i.add(b->{
+            Location location=b.getBlock().getLocation();
+            for(int i=0;i<3;i++){
+                for(int j=0;j<3;j++){
+                    for(int k=0;k<3;k++){
+                        b.getPlayer().getWorld().getBlockAt(location).setType(Material.DIAMOND_BLOCK);
+                        location.setY(location.getY()+1);
+                    }
+                    location.setY(location.getY()-3);
+                    location.setX(location.getX()+1);
+                }
+                location.setX(location.getX()-3);
+                location.setZ(location.getZ()+1);
+            }
+        });
+        i.add(b->{
+           ItemStack item=new ItemStack(Material.IRON_SHOVEL);
+           ItemMeta meta=item.getItemMeta();
+           meta.setDisplayName("§cBigShovel");
+           item.setItemMeta(meta);
+           b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");

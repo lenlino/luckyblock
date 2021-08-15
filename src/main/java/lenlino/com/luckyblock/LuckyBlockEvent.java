@@ -345,23 +345,7 @@ public class LuckyBlockEvent implements Listener {
                         e.getPlayer().setMetadata("LuckyDead", new FixedMetadataValue(this.luckyblock.plugin, e.getPlayer().getLocation().clone()));
                         e.getPlayer().setHealth(0);
                     } else if (e.getItem().getItemMeta().getDisplayName().equals("§lBighoe") && e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)) {
-                        Location l = e.getClickedBlock().getLocation();
-                        l.setX(l.getX() - 1);
-                        l.setZ(l.getZ() - 1);
-                        for (int x = 0; x < 3; x++) {
-                            for (int y = 0; y < 3; y++) {
-                                if (x != 1 || y != 1) {
-                                    if (l.getBlock().getType() == Material.GRASS_BLOCK) {
-                                        l.getBlock().setType(Material.FARMLAND);
-                                    } else if (l.getBlock().getType() == Material.DIRT) {
-                                        l.getBlock().setType(Material.FARMLAND);
-                                    }
-                                }
-                                l.setX(l.getX() + 1);
-                            }
-                            l.setX(l.getX() - 3);
-                            l.setZ(l.getZ() + 1);
-                        }
+                        setMaterials(e,Material.FARMLAND);
                     }else if (e.getItem().getItemMeta().getDisplayName().equals("§lFireStick")) {
                         Fireball living = (Fireball) e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(), EntityType.FIREBALL);
                         living.setVelocity(e.getPlayer().getVelocity());
@@ -528,9 +512,36 @@ public class LuckyBlockEvent implements Listener {
                         }else{
                             e.getPlayer().sendMessage("Need 1 level");
                         }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBigShovel")&& e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)){
+                        setMaterials(e,Material.GRASS_PATH);
                     }
                 }
             }
+        }
+    }
+    private void setMaterials(PlayerInteractEvent e,Material material){
+        Location l = e.getClickedBlock().getLocation();
+        l.setX(l.getX() - 1);
+        l.setZ(l.getZ() - 1);
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                if (x != 1 || y != 1) {
+                    if(this.luckyblock.IsWorldGuard){
+                        if(!this.luckyblock.query.testState(BukkitAdapter.adapt(l),this.luckyblock.worldGuardPlugin.wrapPlayer(e.getPlayer()),Flags.BUILD)){
+                            if (l.getBlock().getType() == Material.GRASS_BLOCK||l.getBlock().getType() == Material.DIRT) {
+                                l.getBlock().setType(material);
+                            }
+                        }
+                    }else{
+                        if (l.getBlock().getType() == Material.GRASS_BLOCK||l.getBlock().getType() == Material.DIRT) {
+                            l.getBlock().setType(material);
+                        }
+                    }
+                }
+                l.setX(l.getX() + 1);
+            }
+            l.setX(l.getX() - 3);
+            l.setZ(l.getZ() + 1);
         }
     }
     @EventHandler
@@ -693,7 +704,7 @@ public class LuckyBlockEvent implements Listener {
                     item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
                     e.getPlayer().getInventory().addItem(item);
                 } else {
-                    e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないですじゃないです");
+                    e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないです");
                     e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
                     e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
                 }
