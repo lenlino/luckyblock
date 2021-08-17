@@ -18,10 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -1005,6 +1002,31 @@ public final class Luckyblock extends JavaPlugin {
            meta.setDisplayName("§cBigShovel");
            item.setItemMeta(meta);
            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.POTION);
+            PotionMeta meta=(PotionMeta)item.getItemMeta();
+            meta.setDisplayName("§f§lMilk");
+            meta.setColor(Color.WHITE);
+            ArrayList<String> list=new ArrayList<>();
+            list.add(ChatColor.RESET+"§fバケツいっぱいの牛乳だと体を壊しそうだから作った");
+            list.add(ChatColor.RESET+"§f飲んだところで何か起きるわけではない");
+            meta.setLore(list);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.STICK);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cこうふ銃");
+            ArrayList<String> list=new ArrayList<>();
+            list.add(ChatColor.RESET+"§fこうふさん特製の銃を工場で作った銃");
+            meta.setLore(list);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+           b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.SHEEP);
         });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");

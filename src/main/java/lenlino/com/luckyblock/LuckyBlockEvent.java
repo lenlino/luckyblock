@@ -25,6 +25,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.*;
 
@@ -512,6 +513,15 @@ public class LuckyBlockEvent implements Listener {
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBigShovel")&& e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)){
                         setMaterials(e,Material.GRASS_PATH);
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
+                        RayTraceResult result=e.getPlayer().getWorld().rayTraceEntities(e.getPlayer().getLocation(),e.getPlayer().getLocation().getDirection(),100,1);
+                        try {
+                            result.getHitEntity();
+                                if (result.getHitEntity().getType().isAlive()) {
+                                    ((LivingEntity) result.getHitEntity()).damage(10, e.getPlayer());
+                                }
+                        }catch (NullPointerException err){
+                        }
                     }
                 }
             }
