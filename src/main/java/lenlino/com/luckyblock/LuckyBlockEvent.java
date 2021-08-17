@@ -247,7 +247,6 @@ public class LuckyBlockEvent implements Listener {
     public void PlayerEntityShootBowEvent(EntityShootBowEvent e){
         if(e.getBow().hasItemMeta()) {
             if(e.getConsumable().getItemMeta().getDisplayName().equals("§cInfinityArrow")){
-                e.setCancelled(true);
                 e.setProjectile(e.getProjectile().getWorld().spawnArrow(e.getProjectile().getLocation(),e.getProjectile().getVelocity(),5,5));
             }
             if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {

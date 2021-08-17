@@ -1011,6 +1011,14 @@ public final class Luckyblock extends JavaPlugin {
         try{
             if(!EntityData.exists()){
                 EntityData.createNewFile();
+                try(FileWriter fw=new FileWriter(EntityData)){
+                    for(EntityType type:EntityType.values()){
+                        fw.write(type.name()+":0.01");
+                    }
+                    fw.flush();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -1098,15 +1106,15 @@ public final class Luckyblock extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-        Plugin plugin1=Bukkit.getPluginManager().getPlugin("WorldGuard");
+    Plugin plugin1=Bukkit.getPluginManager().getPlugin("WorldGuard");
         if(plugin1==null||!(plugin1 instanceof WorldGuardPlugin)){
-            IsWorldGuard=false;
-        }else{
-            worldGuardPlugin=WorldGuardPlugin.inst();
-            container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            query = container.createQuery();
-        }
+        IsWorldGuard=false;
+    }else{
+        worldGuardPlugin=WorldGuardPlugin.inst();
+        container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        query = container.createQuery();
     }
+}
     @Override
     public void onDisable() {
         saveConfig();
