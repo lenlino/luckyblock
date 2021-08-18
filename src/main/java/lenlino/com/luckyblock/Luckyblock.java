@@ -1028,6 +1028,13 @@ public final class Luckyblock extends JavaPlugin {
         i.add(b->{
            b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.SHEEP);
         });
+        i.add(b->{
+           ItemDrop(Material.DIRT,16,b);
+            ItemDrop(Material.GRASS_BLOCK,16,b);
+            ItemDrop(Material.PODZOL,16,b);
+            ItemDrop(Material.COARSE_DIRT,16,b);
+            ItemDrop(Material.MYCELIUM,16,b);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{

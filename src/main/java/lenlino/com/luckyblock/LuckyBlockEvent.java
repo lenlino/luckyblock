@@ -3,6 +3,7 @@ package lenlino.com.luckyblock;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.bukkit.event.entity.DamageEntityEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
+import net.minecraft.server.v1_16_R3.ItemFireworks;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -513,14 +515,21 @@ public class LuckyBlockEvent implements Listener {
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBigShovel")&& e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)){
                         setMaterials(e,Material.GRASS_PATH);
-                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
-                        RayTraceResult result=e.getPlayer().getWorld().rayTraceEntities(e.getPlayer().getLocation(),e.getPlayer().getLocation().getDirection(),100,1);
-                        try {
-                            result.getHitEntity();
-                                if (result.getHitEntity().getType().isAlive()) {
-                                    ((LivingEntity) result.getHitEntity()).damage(10, e.getPlayer());
-                                }
-                        }catch (NullPointerException err){
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")){
+                        if(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK) {
+                            Entity entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 75);
+                            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                            if (entity != null) {
+                                ((LivingEntity) entity).damage(10, e.getPlayer());
+                            }
+                        }else{
+                            if(e.getPlayer().hasMetadata("LuckyGun")){
+                                e.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+                                e.getPlayer().removeMetadata("LuckyGun",this.luckyblock);
+                            }else{
+                                e.getPlayer().setMetadata("LuckyGun",new FixedMetadataValue(this.luckyblock,"aaaa"));
+                                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW,Integer.MAX_VALUE,100));
+                            }
                         }
                     }
                 }
