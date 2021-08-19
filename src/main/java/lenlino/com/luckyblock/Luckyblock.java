@@ -1042,7 +1042,9 @@ public final class Luckyblock extends JavaPlugin {
                 EntityData.createNewFile();
                 try(FileWriter fw=new FileWriter(EntityData)){
                     for(EntityType type:EntityType.values()){
-                        fw.write(type.name()+":0.01"+System.lineSeparator());
+                        if(type.isAlive()) {
+                            fw.write(type.name() + ":0.01" + System.lineSeparator());
+                        }
                     }
                     fw.flush();
                 }catch(IOException e){
@@ -1055,7 +1057,7 @@ public final class Luckyblock extends JavaPlugin {
         try(BufferedReader br=new BufferedReader(new FileReader(EntityData))){
             String str;
             while((str=br.readLine())!=null){
-                if(str.matches("[A-Z]+:[0-9]+")) {
+                if(str.matches("[A-Z]+:[0-9\\.]+")) {
                     String[] strs = str.split(":", 2);
                     if (strs.length != 2) {
                         getLogger().info("ファイルの内容がおかしいです");
