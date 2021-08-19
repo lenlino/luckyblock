@@ -223,6 +223,10 @@ public class LuckyBlockEvent implements Listener {
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PRIMED_TNT);
             }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§cShulker Box")){
                 b.setCancelled(true);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型村人")){
+                b.setCancelled(true);
+                b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
+                b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.VILLAGER);
             }
         }
     }

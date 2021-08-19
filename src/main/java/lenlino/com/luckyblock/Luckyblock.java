@@ -1030,6 +1030,13 @@ public final class Luckyblock extends JavaPlugin {
             ItemDrop(Material.COARSE_DIRT,16,b);
             ItemDrop(Material.MYCELIUM,16,b);
         });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.EMERALD_BLOCK,8);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c携帯型村人");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{
