@@ -1,9 +1,7 @@
 package lenlino.com.luckyblock;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.bukkit.event.entity.DamageEntityEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
-import net.minecraft.server.v1_16_R3.ItemFireworks;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
@@ -22,17 +20,15 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.RayTraceResult;
 
 import java.util.*;
 
 public class LuckyBlockEvent implements Listener {
-    Luckyblock luckyblock=null;
+    Luckyblock luckyblock;
     Set<String> names=new HashSet<>();
     Material[] DontBlocks={
             Material.STRUCTURE_BLOCK,
@@ -58,7 +54,7 @@ public class LuckyBlockEvent implements Listener {
     };
     BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
     Random random=new Random();
-    HashMap<String,BreakMode> BigPicMode=new HashMap<String, BreakMode>();
+    HashMap<String,BreakMode> BigPicMode=new HashMap<>();
     HashSet<String> stringHashSet=new HashSet<>();
     HashMap<String,WoodBreakMood> WoodBreak=new HashMap<>();
     HashMap<Material,Material> Wood_With_Leaf=new HashMap<>();
@@ -748,12 +744,24 @@ public class LuckyBlockEvent implements Listener {
             if(im.getBlockState() instanceof ShulkerBox){
                 ShulkerBox shulker = (ShulkerBox) im.getBlockState();
                 for(int i=0;i<shulker.getInventory().getSize();i++){
-                    shulker.getInventory().setItem(i,e.getInventory().getItem(i));
+                    if(!isShulker(e.getInventory().getItem(i))) {
+                        shulker.getInventory().setItem(i, e.getInventory().getItem(i));
+                    }else{
+                        e.getPlayer().getInventory().addItem(e.getInventory().getItem(i));
+                    }
                 }
                 im.setBlockState(shulker);
                 item.setItemMeta(im);
             }
         }
+    }
+    private boolean isShulker(ItemStack item){
+        if(item.getItemMeta() instanceof BlockStateMeta){
+            if(((BlockStateMeta)item.getItemMeta()).getBlockState() instanceof ShulkerBox){
+                return true;
+            }
+        }
+        return false;
     }
     @EventHandler
     public void InventoryClickEvent(InventoryClickEvent e){
