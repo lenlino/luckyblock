@@ -506,11 +506,6 @@ public final class Luckyblock extends JavaPlugin {
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,1000,3));
             b.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000,3));
         });
-        i.add(b ->{
-            b.getPlayer().setMetadata("TNT",new FixedMetadataValue(plugin,b.getBlock().getLocation().clone()));
-            b.getPlayer().sendMessage("§cTNT");
-            i.get((new Random()).nextInt(i.size())).onigiri(b);
-        });
         i.add(b->{
             ItemStack item = new ItemStack(Material.STICK);
             ItemMeta meta = item.getItemMeta();
@@ -1141,13 +1136,13 @@ public final class Luckyblock extends JavaPlugin {
         }
     Plugin plugin1=Bukkit.getPluginManager().getPlugin("WorldGuard");
         if(plugin1==null||!(plugin1 instanceof WorldGuardPlugin)){
-        IsWorldGuard=false;
-    }else{
-        worldGuardPlugin=WorldGuardPlugin.inst();
-        container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        query = container.createQuery();
+            IsWorldGuard=false;
+        }else{
+            worldGuardPlugin=WorldGuardPlugin.inst();
+            container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            query = container.createQuery();
+        }
     }
-}
     @Override
     public void onDisable() {
         saveConfig();

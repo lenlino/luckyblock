@@ -517,7 +517,12 @@ public class LuckyBlockEvent implements Listener {
                         setMaterials(e,Material.GRASS_PATH);
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")){
                         if(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK) {
-                            Entity entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 75);
+                            Entity entity;
+                            if(e.getPlayer().hasMetadata("LuckyGun")) {
+                                entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 90);
+                            }else{
+                                entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 75);
+                            }
                             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
                             if (entity != null) {
                                 ((LivingEntity) entity).damage(10, e.getPlayer());
@@ -638,19 +643,9 @@ public class LuckyBlockEvent implements Listener {
         e.setCancelled(false);
     }
     @EventHandler
-    public void TNTJoinEvent(PlayerJoinEvent e){
-        if(e.getPlayer().hasMetadata("TNT")){
-            for(int i=0;i<10;i++) {
-                Entity tnt = e.getPlayer().getWorld().spawnEntity(e.getPlayer().getLocation(), EntityType.PRIMED_TNT);
-                e.getPlayer().addPassenger(tnt);
-            }
-            e.getPlayer().removeMetadata("TNT",this.luckyblock.plugin);
-        }
-    }
-    @EventHandler
     public void CreatureSpawnEvent(CreatureSpawnEvent e) {
         if(this.luckyblock.SpawnEnetities.containsKey(e.getEntityType())) {
-            double d = Math.random();
+            double d = ((double)this.luckyblock.random.nextInt(100))/100;
             if (d<this.luckyblock.SpawnEnetities.get(e.getEntityType())&&e.getSpawnReason().equals(CreatureSpawnEvent.SpawnReason.NATURAL)) {
                 e.getEntity().setMetadata("mob", new FixedMetadataValue(this.luckyblock.plugin, e.getEntity().getLocation().clone()));
                 e.getEntity().setCustomName("LuckyMob");
