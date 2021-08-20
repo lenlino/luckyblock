@@ -527,7 +527,7 @@ public class LuckyBlockEvent implements Listener {
                             if (entity != null) {
                                 ((LivingEntity) entity).damage(10, e.getPlayer());
                             }
-                        }else{
+                        }else if(e.getPlayer().isSneaking()){
                             if(e.getPlayer().hasMetadata("LuckyGun")){
                                 e.getPlayer().removePotionEffect(PotionEffectType.SLOW);
                                 e.getPlayer().removeMetadata("LuckyGun",this.luckyblock);
