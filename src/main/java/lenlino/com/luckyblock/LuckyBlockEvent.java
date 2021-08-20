@@ -515,15 +515,11 @@ public class LuckyBlockEvent implements Listener {
                         }
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cBigShovel")&& e.getAction() == Action.RIGHT_CLICK_BLOCK && (e.getClickedBlock().getType() == Material.GRASS_BLOCK || e.getClickedBlock().getType() == Material.DIRT)){
                         setMaterials(e,Material.GRASS_PATH);
-                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")){
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")||e.getItem().getItemMeta().getDisplayName().equals("§cとうふ銃")){
                         if(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK) {
                             Entity entity;
-                            if(e.getPlayer().hasMetadata("LuckyGun")) {
-                                entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 90);
-                            }else{
-                                entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), 75);
-                            }
-                            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                            entity = EntityGetPlayer.getStraightEntity(e.getPlayer(), e.getPlayer().hasMetadata("LuckyGun")?90:75,e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃"));
+                            e.getPlayer().playSound(e.getPlayer().getLocation(), e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")?Sound.ENTITY_GENERIC_EXPLODE:Sound.ENTITY_GENERIC_BIG_FALL, 1, e.getItem().getItemMeta().getDisplayName().equals("§cこうふ銃")?1:2);
                             if (entity != null) {
                                 ((LivingEntity) entity).damage(10, e.getPlayer());
                             }

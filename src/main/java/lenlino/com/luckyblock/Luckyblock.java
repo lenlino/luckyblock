@@ -1037,6 +1037,17 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.STICK);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cとうふ銃");
+            ArrayList<String> list=new ArrayList<>();
+            list.add(ChatColor.RESET+"§fこうふさんがおもろそうと思って作った銃");
+            list.add(ChatColor.RESET+"§f何かに当たると変な方向に行ってしまうというデメリット付き");
+            meta.setLore(list);
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{
