@@ -53,7 +53,6 @@ public class LuckyBlockEvent implements Listener {
             Material.ENCHANTING_TABLE,
     };
     BlockFace[] blockFaces={BlockFace.UP,BlockFace.DOWN,BlockFace.WEST,BlockFace.EAST,BlockFace.NORTH,BlockFace.SOUTH};
-    Random random=new Random();
     HashMap<String,BreakMode> BigPicMode=new HashMap<>();
     HashSet<String> stringHashSet=new HashSet<>();
     HashMap<String,WoodBreakMood> WoodBreak=new HashMap<>();
@@ -76,7 +75,7 @@ public class LuckyBlockEvent implements Listener {
         if(b.getBlock().hasMetadata("lucky")){
             b.getBlock().setType(Material.AIR);
             b.getBlock().removeMetadata("lucky",this.luckyblock.plugin);
-            this.luckyblock.i.get(random.nextInt(this.luckyblock.i.size())).onigiri(b);
+            this.luckyblock.i.get(this.luckyblock.random.nextInt(this.luckyblock.i.size())).onigiri(b);
             b.getBlock().getWorld().spawnParticle(Particle.EXPLOSION_LARGE,b.getBlock().getLocation(),1);
             b.getBlock().getWorld().playSound(b.getPlayer().getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK,100,1);
         }else if(b.getBlock().hasMetadata("luckySponge")){
@@ -223,6 +222,10 @@ public class LuckyBlockEvent implements Listener {
                 b.setCancelled(true);
                 b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.VILLAGER);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("オークの原木?§c")&&!b.isCancelled()){
+                b.getPlayer().damage(999,b.getPlayer());
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c無限松明")&&!b.isCancelled()){
+                b.getItemInHand().setAmount(b.getItemInHand().getAmount()+1);
             }
         }
     }
@@ -251,6 +254,7 @@ public class LuckyBlockEvent implements Listener {
         if(e.getBow().hasItemMeta()) {
             if(e.getConsumable().getItemMeta().getDisplayName().equals("§cInfinityArrow")){
                 e.setProjectile(e.getProjectile().getWorld().spawnArrow(e.getProjectile().getLocation(),e.getProjectile().getVelocity(),5,5));
+                return;
             }
             if (e.getBow().getItemMeta().getDisplayName().equals("§lPlayerBow")) {
                 e.getProjectile().addPassenger(e.getEntity());
@@ -275,6 +279,8 @@ public class LuckyBlockEvent implements Listener {
                         e.getEntity().getLocation().getBlock().setType(material);
                     }
                 }
+            }else if(e.getBow().getItemMeta().getDisplayName().equals("§cSuperTNTBow")){
+                e.getProjectile().setMetadata("LuckyTNTBow",new FixedMetadataValue(this.luckyblock,"aaa"));
             }
         }
     }
@@ -295,6 +301,9 @@ public class LuckyBlockEvent implements Listener {
         }else if(e.getEntity().hasMetadata("FallingBlock")){
             e.getEntity().removeMetadata("FallingBlock",this.luckyblock);
             e.getEntity().remove();
+        }else if(e.getEntity().hasMetadata("LuckyTNTBow")){
+            e.getEntity().removeMetadata("LuckyTNTBow",this.luckyblock);
+            ((TNTPrimed)e.getEntity().getWorld().spawnEntity(e.getEntity().getLocation(),EntityType.PRIMED_TNT)).setFuseTicks(0);
         }
     }
     @EventHandler
@@ -404,7 +413,7 @@ public class LuckyBlockEvent implements Listener {
                         e.setCancelled(true);
                         List<Entity> entities = e.getPlayer().getNearbyEntities(2.5, 2.5, 2.5);
                         Location location = e.getClickedBlock().getLocation();
-                        location.setY(location.getY()+2);
+                        location.setY(location.getY()+1);
                         if (entities.size() != 0) {
                             Firework entity = (Firework)e.getPlayer().getWorld().spawnEntity(location, EntityType.FIREWORK);
                             FireworkMeta meta=entity.getFireworkMeta();
@@ -532,6 +541,15 @@ public class LuckyBlockEvent implements Listener {
                                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW,Integer.MAX_VALUE,100));
                             }
                         }
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c無限大の可能性がある花火")&&e.getAction()==Action.RIGHT_CLICK_BLOCK){
+                        e.setCancelled(true);
+                        Firework firework=(Firework)e.getClickedBlock().getWorld().spawnEntity(e.getClickedBlock().getRelative(BlockFace.UP).getLocation(),EntityType.FIREWORK);
+                        FireworkMeta meta=firework.getFireworkMeta();
+                        meta.setPower(3);
+                        meta.addEffect(FireworkEffect.builder().withColor(Color.fromRGB(this.luckyblock.random.nextInt(255),this.luckyblock.random.nextInt(255),this.luckyblock.random.nextInt(255))).with(FireworkEffect.Type.values()[this.luckyblock.random.nextInt(FireworkEffect.Type.values().length)]).build());
+                        firework.setFireworkMeta(meta);
+                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c無限水")&&(e.getAction()==Action.RIGHT_CLICK_AIR||e.getAction()==Action.RIGHT_CLICK_BLOCK)){
+                        e.getItem().setAmount(e.getItem().getAmount()+1);
                     }
                 }
             }
@@ -595,6 +613,8 @@ public class LuckyBlockEvent implements Listener {
                 for(PotionEffect effect:e.getPlayer().getActivePotionEffects()){
                     e.getPlayer().removePotionEffect(effect.getType());
                 }
+            }else if(e.getItem().getItemMeta().getDisplayName().equals("§cとうふ牛乳")){
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.values()[this.luckyblock.random.nextInt(PotionEffectType.values().length)],1000,5));
             }
         }
     }
@@ -652,7 +672,7 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void dropevent(EntityDeathEvent e) {
-        if (e.getEntity().hasMetadata("mob") && e.getEntity().getKiller()!=null) {
+        if (e.getEntity().hasMetadata("mob")) {
             e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), luckyblock.createskull(1));
         }
     }
@@ -732,6 +752,7 @@ public class LuckyBlockEvent implements Listener {
                 for(int i=0;i<27;i++){
                     e.getPlayer().getInventory().addItem(e.getView().getItem(i));
                 }
+                return;
             }
             ItemMeta meta=item.getItemMeta();
             meta.setDisplayName("§cShulker Box");
@@ -752,9 +773,13 @@ public class LuckyBlockEvent implements Listener {
         }
     }
     private boolean isShulker(ItemStack item){
-        if(item.getItemMeta() instanceof BlockStateMeta){
-            if(((BlockStateMeta)item.getItemMeta()).getBlockState() instanceof ShulkerBox){
-                return true;
+        if(item!=null) {
+            if (item.hasItemMeta()) {
+                if (item.getItemMeta() instanceof BlockStateMeta) {
+                    if (((BlockStateMeta) item.getItemMeta()).getBlockState() instanceof ShulkerBox) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -769,7 +794,7 @@ public class LuckyBlockEvent implements Listener {
     }
     @EventHandler
     public void PlayerEggThrowEvent(PlayerEggThrowEvent e) {
-        if(e.getEgg().getItem().getItemMeta()!=null) {
+        if(e.getEgg().getItem().hasItemMeta()) {
             if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§c§lhand grenade")) {
                 e.getEgg().getWorld().spawnEntity(e.getEgg().getLocation(), EntityType.PRIMED_TNT);
                 e.getEgg().remove();
@@ -786,9 +811,9 @@ public class LuckyBlockEvent implements Listener {
                     location.setZ(location.getZ()-5);
                 }
                 e.getEgg().remove();
-            }else if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§cCreeperEgg")){
-                Creeper creeper=(Creeper)e.getEgg().getWorld().spawnEntity(e.getEgg().getLocation(),EntityType.CREEPER);
-                creeper.setExplosionRadius(creeper.getExplosionRadius()*2);
+            }else if(e.getEgg().getItem().getItemMeta().getDisplayName().equals("§cCreeperEgg")) {
+                Creeper creeper = (Creeper) e.getEgg().getWorld().spawnEntity(e.getEgg().getLocation(), EntityType.CREEPER);
+                creeper.setExplosionRadius(creeper.getExplosionRadius() * 2);
             }
         }
     }

@@ -1048,6 +1048,69 @@ public final class Luckyblock extends JavaPlugin {
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
+        i.add(b->{
+           ItemDrop(Material.OAK_LOG,16,b);
+        });
+        i.add(b->{
+            ItemDrop(Material.ACACIA_LOG,16,b);
+        });
+        i.add(b->{
+            ItemDrop(Material.BIRCH_LOG,16,b);
+        });
+        i.add(b->{
+            ItemDrop(Material.DARK_OAK_LOG,16,b);
+        });
+        i.add(b->{
+            ItemDrop(Material.JUNGLE_LOG,16,b);
+        });
+        i.add(b->{
+            ItemDrop(Material.SPRUCE_LOG,16,b);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.FIREWORK_ROCKET);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c無限大の可能性がある花火");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.OAK_LOG,16);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("オークの原木?§c");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.TORCH);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c無限松明");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.BOW);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cSuperTNTBow");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemDrop(Material.END_CRYSTAL,7,b);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.MILK_BUCKET);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§cとうふ牛乳");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
+        i.add(b->{
+            ItemStack item=new ItemStack(Material.SPLASH_POTION);
+            ItemMeta meta=item.getItemMeta();
+            meta.setDisplayName("§c無限水");
+            item.setItemMeta(meta);
+            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
+        });
         getServer().getPluginManager().registerEvents(new LuckyBlockEvent(this), this);
         File EntityData=new File(getDataFolder(),"EntityData.txt");
         try{
