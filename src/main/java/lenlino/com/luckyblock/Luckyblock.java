@@ -23,8 +23,10 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import java.io.*;
 import java.util.*;
@@ -1106,8 +1108,9 @@ public final class Luckyblock extends JavaPlugin {
         });
         i.add(b->{
             ItemStack item=new ItemStack(Material.SPLASH_POTION);
-            ItemMeta meta=item.getItemMeta();
+            PotionMeta meta=(PotionMeta) item.getItemMeta();
             meta.setDisplayName("§c無限水");
+            meta.setBasePotionData(new PotionData(PotionType.WATER));
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });

@@ -614,7 +614,7 @@ public class LuckyBlockEvent implements Listener {
                     e.getPlayer().removePotionEffect(effect.getType());
                 }
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cとうふ牛乳")){
-                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.values()[this.luckyblock.random.nextInt(PotionEffectType.values().length)],1000,5));
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.values()[this.luckyblock.random.nextInt(PotionEffectType.values().length)],1200,5));
             }
         }
     }
