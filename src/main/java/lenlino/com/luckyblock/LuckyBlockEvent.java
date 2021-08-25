@@ -4,6 +4,9 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.flags.Flags;
 import org.bukkit.*;
 import org.bukkit.block.*;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Lightable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Torch;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -121,17 +125,36 @@ public class LuckyBlockEvent implements Listener {
             }
         }
     }
+    /*@EventHandler
+    public void ItemDropEvent(PlayerDropItemEvent e){
+        if(e.getPlayer().getOpenInventory().getTitle().equals("§cShulker Box")){
+            e.getPlayer().closeInventory();
+        }
+    }*/
     private void breakBlocks(Player p,Block b,List<Block> blocks){
-        for(BlockFace blockFace:blockFaces){
-            if(b.getRelative(blockFace).getType()==b.getType()){
-                blocks.add(b.getRelative(blockFace));
-            }else if(WoodBreak.containsKey(p.getName())){
-                if(WoodBreak.get(p.getName())==WoodBreakMood.WITH_LEAF){
-                    if(b.getRelative(blockFace).getType()==Wood_With_Leaf.get(b.getType())){
-                        blocks.add(b.getRelative(blockFace));
+        Location location=b.getLocation().clone();
+        location.setX(location.getX()-1);
+        location.setY(location.getY()-1);
+        location.setZ(location.getZ()-1);
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++) {
+                for(int k=0;k<3;k++) {
+                    if (location.getBlock().getType()== b.getType()) {
+                        blocks.add(location.getBlock());
+                    } else if (WoodBreak.containsKey(p.getName())) {
+                        if (WoodBreak.get(p.getName()) == WoodBreakMood.WITH_LEAF) {
+                            if (location.getBlock().getType() == Wood_With_Leaf.get(b.getType())) {
+                                blocks.add(location.getBlock());
+                            }
+                        }
                     }
+                    location.setY(location.getY()+1);
                 }
+                location.setY(location.getY()-3);
+                location.setX(location.getX()+1);
             }
+            location.setX(location.getX()-3);
+            location.setZ(location.getZ()+1);
         }
         if(this.luckyblock.worldGuardPlugin!=null){
             if(!this.luckyblock.query.testState(BukkitAdapter.adapt(b.getLocation()),this.luckyblock.worldGuardPlugin.wrapPlayer(p),Flags.BUILD)){
@@ -196,15 +219,9 @@ public class LuckyBlockEvent implements Listener {
                 b.getBlock().setMetadata("luckySponge", new FixedMetadataValue(this.luckyblock.plugin, b.getBlock().getLocation().clone()));
             }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lHeart")||b.getItemInHand().getItemMeta().getDisplayName().equals("§c§lEnder Chest")){
                 b.setCancelled(true);
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c金床")){
+            }/*else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c金床")){
                 b.setCancelled(true);
-                Inventory inv=Bukkit.createInventory(null,9,"§c金床");
-                ItemStack item=new ItemStack(Material.GLASS_PANE);
-                for(int i=2;i<9;i++){
-                    inv.setItem(i,item);
-                }
-                b.getPlayer().openInventory(inv);
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型アイアンゴーレム")){
+            }*/else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型アイアンゴーレム")){
                 b.setCancelled(true);
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.IRON_GOLEM);
                 b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
@@ -216,16 +233,14 @@ public class LuckyBlockEvent implements Listener {
                 b.setCancelled(true);
                 b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.PRIMED_TNT);
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§cShulker Box")){
+            }/*else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§cShulker Box")){
                 b.setCancelled(true);
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型村人")){
+            }*/else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c携帯型村人")){
                 b.setCancelled(true);
                 b.getItemInHand().setAmount(b.getItemInHand().getAmount()-1);
                 b.getBlock().getWorld().spawnEntity(b.getBlock().getLocation(),EntityType.VILLAGER);
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("オークの原木?§c")&&!b.isCancelled()){
-                b.getPlayer().damage(999,b.getPlayer());
-            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("§c無限松明")&&!b.isCancelled()){
-                b.getItemInHand().setAmount(b.getItemInHand().getAmount()+1);
+            }else if(b.getItemInHand().getItemMeta().getDisplayName().equals("オークの原木?§c")&&!b.isCancelled()) {
+                b.getPlayer().damage(999, b.getPlayer());
             }
         }
     }
@@ -454,14 +469,14 @@ public class LuckyBlockEvent implements Listener {
                             }
                             e.getPlayer().getLocation().getBlock().setType(material);
                         }
-                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§c金床")){
+                    }/*else if(e.getItem().getItemMeta().getDisplayName().equals("§c金床")){
                         Inventory inv=Bukkit.createInventory(null,9,"§c金床");
                         ItemStack item=new ItemStack(Material.GLASS_PANE);
                         for(int i=2;i<9;i++){
                             inv.setItem(i,item);
                         }
                         e.getPlayer().openInventory(inv);
-                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cNoRideStick")){
+                    }*/else if(e.getItem().getItemMeta().getDisplayName().equals("§cNoRideStick")){
                         for(Entity entity:e.getPlayer().getPassengers()){
                             e.getPlayer().removePassenger(entity);
                         }
@@ -505,7 +520,7 @@ public class LuckyBlockEvent implements Listener {
                                 e.getPlayer().sendMessage("ロックしました Shift+Right Click で変えれます");
                             }
                         }
-                    }else if(e.getItem().getItemMeta().getDisplayName().equals("§cShulker Box")){
+                    /*}else if(e.getItem().getItemMeta().getDisplayName().equals("§cShulker Box")){
                         if(e.getItem().getItemMeta() instanceof BlockStateMeta){
                             BlockStateMeta im = (BlockStateMeta)e.getItem().getItemMeta();
                             if(im.getBlockState() instanceof ShulkerBox){
@@ -514,7 +529,7 @@ public class LuckyBlockEvent implements Listener {
                                 inv.setContents(shulker.getInventory().getContents());
                                 e.getPlayer().openInventory(inv);
                             }
-                        }
+                        }*/
                     }else if(e.getItem().getItemMeta().getDisplayName().equals("§cTPStick")&&e.getAction()==Action.RIGHT_CLICK_BLOCK){
                         if(1<=e.getPlayer().getLevel()) {
                             e.getPlayer().teleport(e.getClickedBlock().getRelative(e.getBlockFace()).getLocation());
@@ -614,7 +629,7 @@ public class LuckyBlockEvent implements Listener {
                     e.getPlayer().removePotionEffect(effect.getType());
                 }
             }else if(e.getItem().getItemMeta().getDisplayName().equals("§cとうふ牛乳")){
-                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.values()[this.luckyblock.random.nextInt(PotionEffectType.values().length)],1200,5));
+                e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.values()[this.luckyblock.random.nextInt(PotionEffectType.values().length)],1200,3));
             }
         }
     }
@@ -725,19 +740,7 @@ public class LuckyBlockEvent implements Listener {
                 }
             });
             e.getPlayer().sendMessage("追加に成功しました");
-        }else if(e.getView().getTitle().equals("§c金床")){
-            if(e.getInventory().getItem(0)!=null||e.getInventory().getItem(1)!=null) {
-                if (e.getInventory().getItem(0).hasItemMeta() && e.getInventory().getItem(0).getAmount() == 1 && e.getInventory().getItem(0).getType() == e.getInventory().getItem(1).getType() && e.getInventory().getItem(0).getAmount() == e.getInventory().getItem(1).getAmount()) {
-                    ItemStack item = e.getInventory().getItem(0);
-                    item.addUnsafeEnchantments(e.getInventory().getItem(1).getEnchantments());
-                    e.getPlayer().getInventory().addItem(item);
-                } else {
-                    e.getPlayer().sendMessage("入っていたアイテムが違うか個数が1じゃないです");
-                    e.getPlayer().getInventory().addItem(e.getInventory().getItem(0));
-                    e.getPlayer().getInventory().addItem(e.getInventory().getItem(1));
-                }
-            }
-        }else if(e.getView().getTitle().equals("§cShulker Box")){
+        /*}else if(e.getView().getTitle().equals("§cShulker Box")){
             ItemStack item=null;
             if(e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()){
                 if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§cShulker Box")){
@@ -769,7 +772,7 @@ public class LuckyBlockEvent implements Listener {
                 }
                 im.setBlockState(shulker);
                 item.setItemMeta(im);
-            }
+            }*/
         }
     }
     private boolean isShulker(ItemStack item){
@@ -783,14 +786,6 @@ public class LuckyBlockEvent implements Listener {
             }
         }
         return false;
-    }
-    @EventHandler
-    public void InventoryClickEvent(InventoryClickEvent e){
-        if(e.getView().getTitle().equals("§c金床")&&e.getCurrentItem()!=null){
-            if(e.getCurrentItem().getType()==Material.GLASS_PANE&&e.getClickedInventory().getSize()==9) {
-                e.setCancelled(true);
-            }
-        }
     }
     @EventHandler
     public void PlayerEggThrowEvent(PlayerEggThrowEvent e) {

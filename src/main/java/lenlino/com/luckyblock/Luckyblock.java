@@ -118,7 +118,7 @@ public final class Luckyblock extends JavaPlugin {
                 fc.set(args[0],null);
                 sender.sendMessage("削除しました");
             }else{
-                sender.sendMessage("キーが見つかりませんでした");
+                sender.sendMessage("見つかりませんでした");
             }
         }else if(cmd.getName().equalsIgnoreCase("lbgetlist")){
             sender.sendMessage("要素数:"+fc.getKeys(false).size());
@@ -768,13 +768,6 @@ public final class Luckyblock extends JavaPlugin {
             ItemDrop(Material.NAME_TAG,8,b);
         });
         i.add(b->{
-            ItemStack item=new ItemStack(Material.ENCHANTING_TABLE);
-            ItemMeta meta=item.getItemMeta();
-            meta.setDisplayName("§c金床");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b->{
            ItemDrop(Material.OAK_BOAT,2,b);
         });
         i.add(b->{
@@ -1079,13 +1072,6 @@ public final class Luckyblock extends JavaPlugin {
             ItemStack item=new ItemStack(Material.OAK_LOG,16);
             ItemMeta meta=item.getItemMeta();
             meta.setDisplayName("オークの原木?§c");
-            item.setItemMeta(meta);
-            b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
-        });
-        i.add(b->{
-            ItemStack item=new ItemStack(Material.TORCH);
-            ItemMeta meta=item.getItemMeta();
-            meta.setDisplayName("§c無限松明");
             item.setItemMeta(meta);
             b.getBlock().getWorld().dropItem(b.getBlock().getLocation(),item);
         });
